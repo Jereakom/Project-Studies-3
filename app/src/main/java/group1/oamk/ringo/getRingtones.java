@@ -1,9 +1,13 @@
 package group1.oamk.ringo;
 
+import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.media.RingtoneManager;
+import android.net.Uri;
 import android.os.Bundle;
+import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +29,7 @@ import java.util.Map;
 import java.util.Set;
 
 public class getRingtones extends AppCompatActivity {
-
+    private static final int PICK_CONTACT = 1000;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -93,7 +97,8 @@ public class getRingtones extends AppCompatActivity {
             setBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    //do something
+                    Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                    startActivityForResult(intent, PICK_CONTACT);
                     notifyDataSetChanged();
                 }
             });
@@ -125,6 +130,25 @@ public class getRingtones extends AppCompatActivity {
         while (cursor.moveToNext()) {
             System.out.print(cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX));
             System.out.print(cursor.getString(RingtoneManager.URI_COLUMN_INDEX));
+        }
+    }
+
+    @Override
+    public void onActivityResult(int reqCode, int resultCode, Intent data) {
+        super.onActivityResult(reqCode, resultCode, data);
+
+        switch (reqCode) {
+            case (PICK_CONTACT):
+                if (resultCode == Activity.RESULT_OK) {
+                    Uri contactData = data.getData();
+                    Cursor phone = getContentResolver().query(contactData, null, null, null, null);
+                    if (phone.moveToFirst()) {
+                        String contactNumberName = phone.getString(phone.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                        // Todo something when contact number selected
+                        //textView.setText("Name: " + contactNumberName);
+                    }
+                }
+                break;
         }
     }
 
