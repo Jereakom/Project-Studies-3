@@ -34,14 +34,6 @@ public class getRingtones extends AppCompatActivity {
         ListView lv = (ListView) findViewById(R.id.ringtone_list);
         setSupportActionBar(toolbar);
 
-        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                        .setAction("Action", null).show();
-            }
-        });
         MyCustomAdapter adapter = new MyCustomAdapter(getRingtones(), this);
               lv.setAdapter(adapter);
 
@@ -79,7 +71,7 @@ public class getRingtones extends AppCompatActivity {
             View view = convertView;
             if (view == null) {
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                view = inflater.inflate(R.layout.content_get_ringtones, null);
+                view = inflater.inflate(R.layout.row_layout, null);
             }
 
             //Handle TextView and display string from your list

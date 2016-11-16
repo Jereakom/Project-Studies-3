@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="group1.oamk.ringo">
-
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <application
         android:allowBackup="true"
         android:icon="@mipmap/ic_launcher"
@@ -17,8 +17,9 @@
         </activity>
         <activity
             android:name=".getRingtones"
-            android:label="@string/title_activity_get_ringtones"
+            android:label="Your Ringtones"
             android:theme="@style/AppTheme.NoActionBar"></activity>
     </application>
+
 
 </manifest>
