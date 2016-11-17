@@ -1,17 +1,22 @@
 package group1.oamk.ringo;
 
 import android.app.Activity;
+import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +26,9 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.provider.ContactsContract.Contacts;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -97,6 +104,8 @@ public class getRingtones extends AppCompatActivity {
             setBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
+                    ringtone_name = list.get(position);
+                    Log.d("ringtone : ", ringtone_name);
                     Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
                     startActivityForResult(intent, PICK_CONTACT);
                     notifyDataSetChanged();
@@ -117,20 +126,10 @@ public class getRingtones extends AppCompatActivity {
             String id = cursor.getString(RingtoneManager.ID_COLUMN_INDEX);
             String title = cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX);
 
-            list.add(id + " : " + title);
+            list.add(title);
         }
 
         return list;
-    }
-
-    public void getNotifications() {
-        RingtoneManager ringtoneManager = new RingtoneManager(this);
-        ringtoneManager.setType(RingtoneManager.TYPE_RINGTONE);
-        Cursor cursor = ringtoneManager.getCursor();
-        while (cursor.moveToNext()) {
-            System.out.print(cursor.getString(RingtoneManager.TITLE_COLUMN_INDEX));
-            System.out.print(cursor.getString(RingtoneManager.URI_COLUMN_INDEX));
-        }
     }
 
     @Override
@@ -144,11 +143,64 @@ public class getRingtones extends AppCompatActivity {
                     Cursor phone = getContentResolver().query(contactData, null, null, null, null);
                     if (phone.moveToFirst()) {
                         String contactNumberName = phone.getString(phone.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
+                        String contactLookup = phone.getString(phone.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                         // Todo something when contact number selected
-                        //textView.setText("Name: " + contactNumberName);
+                        saveRingtoneToContact(contactLookup, ringtone_name);
+                        successMessage();
                     }
                 }
                 break;
+        }
+    }
+
+    public void successMessage(){
+        AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+        dlgAlert.setMessage("Custom ringtone successfully applied to contact!");
+        dlgAlert.setTitle("Success");
+        dlgAlert.setPositiveButton("Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //dismiss the dialog
+                    }
+                });
+        dlgAlert.setCancelable(true);
+        dlgAlert.create().show();
+    }
+public String ringtone_name;
+    public void saveRingtoneToContact(String contactLookup, String ringtone_name){
+        // The Uri used to look up a contact by phone number
+        final Uri lookupUri = Uri.withAppendedPath(ContactsContract.Contacts.CONTENT_LOOKUP_URI, contactLookup);
+// The columns used for `Contacts.getLookupUri`
+        final String[] projection = new String[] {
+                Contacts._ID, Contacts.LOOKUP_KEY
+        };
+// Build your Cursor
+        final Cursor data = getContentResolver().query(lookupUri, projection, null, null, null);
+        data.moveToFirst();
+        try {
+            // Get the contact lookup Uri
+            final long contactId = data.getLong(0);
+            final String lookupKey = data.getString(1);
+            final Uri contactUri = Contacts.getLookupUri(contactId, lookupKey);
+            if (contactUri == null) {
+                // Invalid arguments
+                return;
+            }
+
+            // Get the path of ringtone you'd like to use
+            final String storage = Environment.getExternalStorageDirectory().getPath();
+            Log.d("path", storage + "/Ringtones/" + ringtone_name.toLowerCase() + ".ogg");
+            final File file = new File("system/media/audio/ringtones", ringtone_name + ".ogg"); // change this later to match our ringtones, now works only if ringtone title=file name
+            final String value = Uri.fromFile(file).toString();
+            Log.d("file uri", value);
+
+            // Apply the custom ringtone
+            final ContentValues values = new ContentValues(1);
+            values.put(Contacts.CUSTOM_RINGTONE, value);
+            getContentResolver().update(contactUri, values, null, null);
+        } finally {
+            // Don't forget to close your Cursor
+            data.close();
         }
     }
 

@@ -3,7 +3,9 @@
     package="group1.oamk.ringo">
 
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
 
     <application
         android:allowBackup="true"
@@ -22,7 +24,6 @@
             android:name=".getRingtones"
             android:label="Your Ringtones"
             android:theme="@style/AppTheme.NoActionBar" />
-        <activity android:name=".OpenContactList"></activity>
     </application>
 
 </manifest>
