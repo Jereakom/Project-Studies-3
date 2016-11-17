@@ -3,6 +3,7 @@ package group1.oamk.ringo;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.media.RingtoneManager;
@@ -12,8 +13,10 @@ import android.os.Environment;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -102,6 +105,7 @@ public class getRingtones extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     ringtone_name = list.get(position);
+                    Log.d("ringtone : ", ringtone_name);
                     Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
                     startActivityForResult(intent, PICK_CONTACT);
                     notifyDataSetChanged();
@@ -142,10 +146,25 @@ public class getRingtones extends AppCompatActivity {
                         String contactLookup = phone.getString(phone.getColumnIndex(ContactsContract.Contacts.LOOKUP_KEY));
                         // Todo something when contact number selected
                         saveRingtoneToContact(contactLookup, ringtone_name);
+                        successMessage();
                     }
                 }
                 break;
         }
+    }
+
+    public void successMessage(){
+        AlertDialog.Builder dlgAlert  = new AlertDialog.Builder(this);
+        dlgAlert.setMessage("Custom ringtone successfully applied to contact!");
+        dlgAlert.setTitle("Success");
+        dlgAlert.setPositiveButton("Ok",
+                new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+                        //dismiss the dialog
+                    }
+                });
+        dlgAlert.setCancelable(true);
+        dlgAlert.create().show();
     }
 public String ringtone_name;
     public void saveRingtoneToContact(String contactLookup, String ringtone_name){
@@ -170,8 +189,10 @@ public String ringtone_name;
 
             // Get the path of ringtone you'd like to use
             final String storage = Environment.getExternalStorageDirectory().getPath();
-            final File file = new File("/system/media/audio", ringtone_name + ".mp3");
+            Log.d("path", storage + "/Ringtones/" + ringtone_name.toLowerCase() + ".ogg");
+            final File file = new File("system/media/audio/ringtones", ringtone_name + ".ogg"); // change this later to match our ringtones, now works only if ringtone title=file name
             final String value = Uri.fromFile(file).toString();
+            Log.d("file uri", value);
 
             // Apply the custom ringtone
             final ContentValues values = new ContentValues(1);
