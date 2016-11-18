@@ -17,9 +17,7 @@ public class MainActivity extends AppCompatActivity {
         final Button button = (Button) findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                CharSequence test = "asdasdasd";
-                TextView testy = (TextView)findViewById(R.id.test);
-                testy.setText(test);
+                startActivity(new Intent(MainActivity.this, makeRingtone.class));
             }
         });
 
