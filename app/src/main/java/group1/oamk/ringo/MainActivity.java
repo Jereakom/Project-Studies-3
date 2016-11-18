@@ -36,5 +36,10 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void goToPackages(View view) {
+        startActivity(new Intent(MainActivity.this, browsePackages.class));
+
+    }
+
 }
 
