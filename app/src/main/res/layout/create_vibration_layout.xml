@@ -7,6 +7,32 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent">
 
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent">
+
+            <TextView
+                android:text="TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentStart="true"
+                android:layout_marginLeft="17dp"
+                android:layout_marginStart="17dp"
+                android:layout_marginBottom="27dp"
+                android:id="@+id/txt" />
+        </RelativeLayout>
+
+        <Button
+            android:text="Vibrate"
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:id="@+id/vibrate_button"
+            android:layout_marginTop="95dp"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true" />
+
         <Button
             android:text="Start"
             android:layout_width="wrap_content"
@@ -32,20 +58,11 @@
             android:layout_marginEnd="57dp" />
 
         <Button
-            android:text="Vibrate"
-            android:layout_width="200dp"
-            android:layout_height="100dp"
-            android:id="@+id/vibrate_button"
-            android:layout_marginTop="95dp"
-            android:layout_alignParentTop="true"
-            android:layout_centerHorizontal="true" />
-
-        <Button
             android:text="Preview"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="26dp"
-            android:id="@+id/play_button"
+            android:id="@+id/preview_button"
             android:layout_below="@+id/end_button"
             android:layout_centerHorizontal="true" />
 
@@ -55,13 +72,17 @@
             android:layout_height="wrap_content"
             android:layout_marginTop="34dp"
             android:id="@+id/assign_button"
-            android:layout_below="@+id/play_button"
+            android:layout_below="@+id/preview_button"
             android:layout_centerHorizontal="true" />
-    </RelativeLayout>
 
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        <TextView
+            android:text="Click Start buton to start making Patterns. Then press VIBRATE button to make desirable patter. Once you are done press STOP button to stop making pattern."
+            android:id="@+id/textView"
+            android:layout_width="291dp"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_alignLeft="@+id/assign_button"
+            android:layout_alignStart="@+id/assign_button" />
 
     </RelativeLayout>
 

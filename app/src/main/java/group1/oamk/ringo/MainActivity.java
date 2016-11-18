@@ -23,6 +23,20 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+
+
+        Button btn_exit = (Button) findViewById(R.id.exit_button);
+        btn_exit.setOnClickListener(new View.OnClickListener() {
+
+            @Override
+            public void onClick(View v) {
+                // TODO Auto-generated method stub
+                finish();
+                System.exit(0);
+                TextView testy = (TextView)findViewById(R.id.test);
+                testy.setText("Exit");
+            }
+        });
     }
 
     public void testThis(View view) {
@@ -39,6 +53,8 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(MainActivity.this, VibrationActivity.class));
 
     }
+
+
 
 }
 
