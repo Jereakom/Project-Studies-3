@@ -2,6 +2,10 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="group1.oamk.ringo">
 
+
+<uses-permission android:name="android.permission.VIBRATE"/>
+
+
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_CONTACTS" />
@@ -24,6 +28,9 @@
             android:name=".getRingtones"
             android:label="Your Ringtones"
             android:theme="@style/AppTheme.NoActionBar" />
+
+    <activity android:name=".VibrationActivity"/>
+
     </application>
 
 </manifest>

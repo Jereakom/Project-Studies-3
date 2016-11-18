@@ -35,6 +35,10 @@ public class MainActivity extends AppCompatActivity {
         startActivity(new Intent(MainActivity.this, getRingtones.class));
 
     }
+    public void go_to_vibration(View view) {
+        startActivity(new Intent(MainActivity.this, VibrationActivity.class));
+
+    }
 
 }
 
