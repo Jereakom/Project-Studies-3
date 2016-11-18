@@ -21,7 +21,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
-        android:text="Set For"
+        android:text="USE"
         android:layout_weight="0.45" />
 
     <Button
