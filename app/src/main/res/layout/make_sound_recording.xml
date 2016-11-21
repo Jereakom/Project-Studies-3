@@ -12,7 +12,7 @@
             android:layout_width="200dp"
             android:layout_height="100dp"
             android:layout_marginTop="29dp"
-            android:id="@+id/start_button"
+            android:id="@+id/start_recording_button"
             android:layout_alignParentTop="true"
             android:layout_centerHorizontal="true" />
 
@@ -20,8 +20,8 @@
             android:text="Stop Recording"
             android:layout_width="200dp"
             android:layout_height="100dp"
-            android:id="@+id/stop_button"
-            android:layout_below="@+id/start_button"
+            android:id="@+id/stop_recording_button"
+            android:layout_below="@+id/start_recording_button"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="35dp" />
 
@@ -36,7 +36,7 @@
 
         <Button
             android:text="Play"
-            android:layout_width="340dp"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/play_button"
             android:layout_above="@+id/save_button"
@@ -53,5 +53,14 @@
             android:layout_alignParentBottom="true"
             android:layout_alignLeft="@+id/save_button"
             android:layout_alignStart="@+id/save_button" />
+
+        <Button
+            android:text="stop"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_above="@+id/save_button"
+            android:layout_alignRight="@+id/save_button"
+            android:layout_alignEnd="@+id/save_button"
+            android:id="@+id/stop_button" />
     </RelativeLayout>
 </LinearLayout>
