@@ -32,6 +32,9 @@
         <activity android:name=".browsePackages"
             android:label="Sound Packages"
         />
+        <activity android:name=".makeRingtone"
+            android:label="Make a ringtone"
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

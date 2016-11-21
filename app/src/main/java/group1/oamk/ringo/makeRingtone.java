@@ -135,7 +135,8 @@ public class makeRingtone extends AppCompatActivity {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                managerOfSound();
+                String song = Environment.getExternalStorageDirectory() + "/Music/ME.wav";
+                managerOfSound(song);
             }
         });
         clear.setOnClickListener(new View.OnClickListener() {
@@ -147,29 +148,46 @@ public class makeRingtone extends AppCompatActivity {
     }
 
     protected void addSoundToQuery(String button) {
+        String sound;
         if (button == "button1") {
-            sounds = push(sounds, Environment.getExternalStorageDirectory() + "/Music/piano1.wav");
+            sound = Environment.getExternalStorageDirectory() + "/Music/piano/1.wav";
+            sounds = push(sounds, sound);
+            managerOfSound(sound);
         }
         else if (button == "button2") {
-            sounds = push(sounds, Environment.getExternalStorageDirectory() + "/Music/piano2.wav");
+            sound = Environment.getExternalStorageDirectory() + "/Music/piano/2.wav";
+            sounds = push(sounds, sound);
+            managerOfSound(sound);
         }
         else if (button == "button3") {
-            sounds = push(sounds, Environment.getExternalStorageDirectory() + "/Music/piano3.wav");
+            sound = Environment.getExternalStorageDirectory() + "/Music/piano/3.wav";
+            sounds = push(sounds, sound);
+            managerOfSound(sound);
         }
         else if (button == "button4") {
-            sounds = push(sounds, Environment.getExternalStorageDirectory() + "/Music/piano4.wav");
+            sound = Environment.getExternalStorageDirectory() + "/Music/piano/4.wav";
+            sounds = push(sounds, sound);
+            managerOfSound(sound);
         }
         else if (button == "button5") {
-            sounds = push(sounds, Environment.getExternalStorageDirectory() + "/Music/piano5.wav");
+            sound = Environment.getExternalStorageDirectory() + "/Music/piano/5.wav";
+            sounds = push(sounds, sound);
+            managerOfSound(sound);
         }
         else if (button == "button6") {
-            sounds = push(sounds, Environment.getExternalStorageDirectory() + "/Music/piano6.wav");
+            sound = Environment.getExternalStorageDirectory() + "/Music/piano/6.wav";
+            sounds = push(sounds, sound);
+            managerOfSound(sound);
         }
         else if (button == "button7") {
-            sounds = push(sounds, Environment.getExternalStorageDirectory() + "/Music/piano7.wav");
+            sound = Environment.getExternalStorageDirectory() + "/Music/piano/7.wav";
+            sounds = push(sounds, sound);
+            managerOfSound(sound);
         }
         else if (button == "button8") {
-            sounds = push(sounds, Environment.getExternalStorageDirectory() + "/Music/piano8.wav");
+            sound = Environment.getExternalStorageDirectory() + "/Music/piano/8.wav";
+            sounds = push(sounds, sound);
+            managerOfSound(sound);
         }
     }
 
@@ -181,7 +199,7 @@ public class makeRingtone extends AppCompatActivity {
         return longer;
     }
 
-    protected void managerOfSound() {
+    protected void managerOfSound(String sound) {
         verifyStoragePermissions(this);
 
         AudioCombine();
@@ -190,8 +208,7 @@ public class makeRingtone extends AppCompatActivity {
             mediaplayer.reset();
             mediaplayer.release();
         }
-        int file = R.raw.jump;
-        Uri song = Uri.fromFile(new File(Environment.getExternalStorageDirectory() + "/Music/ME.wav"));
+        Uri song = Uri.fromFile(new File(sound));
         mediaplayer = MediaPlayer.create(this, song);
         mediaplayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
             @Override
@@ -210,7 +227,6 @@ public class makeRingtone extends AppCompatActivity {
             DataInputStream[] mergeFilesStream = new DataInputStream[args.length];
             long[] sizes = new long[args.length];
             for (int i = 0; i < args.length; i++) {
-                Log.d("", args[i]);
                 File file = new File(args[i]);
                 sizes[i] = (file.length() - 44) / 2;
             }
