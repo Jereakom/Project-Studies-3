@@ -36,10 +36,15 @@ import org.json.JSONObject;
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -99,7 +104,83 @@ public class downloadPackages extends AppCompatActivity {
             return 0;
             //just return 0 if your list items do not have an Id variable.
         }
+        class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
+            /**
+             * Before starting background thread
+             * */
+            @Override
+            protected void onPreExecute() {
+                super.onPreExecute();
+                System.out.println("Starting download");
+            }
+
+            /**
+             * Downloading file in background thread
+             * */
+            @Override
+            protected String doInBackground(String... f_url) {
+                int count;
+                try {
+                    String rootPath = Environment.getExternalStorageDirectory()
+                            .getAbsolutePath() + "/Music/" + folder + "/";
+                    File root = new File(rootPath);
+                    if (!root.exists()) {
+                        root.mkdirs();
+                    }
+
+                    System.out.println("Downloading");
+
+                    for (int i = 0; i < f_url.length; i++) {
+                        URL url = new URL(f_url[i]);
+
+                        URLConnection conection = url.openConnection();
+                        conection.connect();
+                        // getting file length
+                        int lenghtOfFile = conection.getContentLength();
+
+                        // input stream to read file - with 8k buffer
+                        InputStream input = new BufferedInputStream(url.openStream(), 8192);
+
+                        // Output stream to write file
+
+                        OutputStream output = new FileOutputStream(rootPath + "/" + (i + 1) + ".wav");
+                        byte data[] = new byte[1024];
+
+                        long total = 0;
+                        while ((count = input.read(data)) != -1) {
+                            total += count;
+
+                            // writing data to file
+                            output.write(data, 0, count);
+
+                        }
+
+                        // flushing output
+                        output.flush();
+
+                        // closing streams
+                        output.close();
+                        input.close();
+                    }
+                } catch (Exception e) {
+                    Log.e("Error: ", e.getMessage());
+                }
+
+                return null;
+            }
+
+
+
+            /**
+             * After completing background task
+             * **/
+            @Override
+            protected void onPostExecute(String file_url) {
+                System.out.println("Downloaded");
+            }
+
+        }
         @Override
         public View getView(final int position, View convertView, ViewGroup parent) {
             View view = convertView;
@@ -119,12 +200,40 @@ public class downloadPackages extends AppCompatActivity {
             downloadBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
+                    folder = list.get(position);
+                    final String folder_space_handled = replace(list.get(position));
+                    final String[] ur = {
+                            "http://www.students.oamk.fi/~t5moda00/soundpacks/" + folder_space_handled + "/1.wav",
+                            "http://www.students.oamk.fi/~t5moda00/soundpacks/" + folder_space_handled + "/2.wav",
+                            "http://www.students.oamk.fi/~t5moda00/soundpacks/" + folder_space_handled + "/3.wav",
+                            "http://www.students.oamk.fi/~t5moda00/soundpacks/" + folder_space_handled + "/4.wav",
+                            "http://www.students.oamk.fi/~t5moda00/soundpacks/" + folder_space_handled + "/5.wav",
+                            "http://www.students.oamk.fi/~t5moda00/soundpacks/" + folder_space_handled + "/6.wav",
+                            "http://www.students.oamk.fi/~t5moda00/soundpacks/" + folder_space_handled + "/7.wav",
+                            "http://www.students.oamk.fi/~t5moda00/soundpacks/" + folder_space_handled + "/8.wav"
+                    };
+                    new DownloadFileFromURL().execute(ur);
                     notifyDataSetChanged();
                 }
             });
+
             return view;
         }
     }
+    public String folder = "";
+    public String replace(String str) {
+        String[] words = str.split(" ");
+        StringBuilder sentence = new StringBuilder(words[0]);
+
+        for (int i = 1; i < words.length; ++i) {
+            sentence.append("%20");
+            sentence.append(words[i]);
+        }
+
+        return sentence.toString();
+    }
+
+
     ArrayList<String> List = new ArrayList<String>();
     private class asyncGetDownloads extends AsyncTask<Void, Void, Void> {
 
