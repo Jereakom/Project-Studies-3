@@ -13,30 +13,18 @@
         android:paddingLeft="8dp"
         android:textSize="18sp"
         android:textStyle="bold"
-        android:layout_weight="1.05" />
+        android:layout_weight="0.75" />
 
     <Button
-        android:id="@+id/set_btn"
+        android:id="@+id/download_btn"
         android:layout_width="65dp"
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_marginRight="10dp"
-        android:text="USE"
-        style="@style/Widget.AppCompat.Button.Colored" />
+        android:text="DOWNLOAD"
+        style="@style/Widget.AppCompat.Button.Colored"
+        android:layout_weight="0.29" />
 
-    <Button
-        android:id="@+id/delete_btn"
-        android:layout_width="50dp"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:layout_marginRight="5dp"
-        android:text=""
-        android:textColor="#FFFFFF"
-        android:layout_weight="0.01"
-        android:layout_gravity="right"
-        style="@style/Widget.AppCompat.Button"
-        android:background="@android:drawable/ic_delete" />
 
 
 </LinearLayout>
