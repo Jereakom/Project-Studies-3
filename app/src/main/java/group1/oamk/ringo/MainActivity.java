@@ -52,10 +52,12 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     public void goToPackages(View view) {
         startActivity(new Intent(MainActivity.this, browsePackages.class));
+
+    }
+    public void go_to_recording(View view) {
+        startActivity(new Intent(MainActivity.this, Sound_Recording.class));
 
     }
 

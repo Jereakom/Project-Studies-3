@@ -28,7 +28,9 @@
             android:name=".getRingtones"
             android:label="Your Ringtones"
             android:theme="@style/AppTheme.NoActionBar" />
-    <activity android:name=".VibrationActivity"/>
+        <activity android:name=".VibrationActivity"/>
+        <activity android:name=".Sound_Recording"/>
+
         <activity android:name=".browsePackages"
             android:label="Sound Packages"
         />
