@@ -11,6 +11,7 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
@@ -26,8 +27,10 @@ import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.provider.ContactsContract.Contacts;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -53,7 +56,12 @@ import java.util.Set;
 
 public class downloadPackages extends AppCompatActivity {
     private static final int PICK_CONTACT = 1000;
+    private static final int PROGRESS = 0x1;
+    public ProgressBar mProgress;
 
+    private int progressInt = 0;
+
+    private Handler mHandler = new Handler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,6 +121,8 @@ public class downloadPackages extends AppCompatActivity {
             protected void onPreExecute() {
                 super.onPreExecute();
                 System.out.println("Starting download");
+                mProgress.setProgress(0);
+                mProgress.setVisibility(View.VISIBLE);
             }
 
             /**
@@ -122,6 +132,12 @@ public class downloadPackages extends AppCompatActivity {
             protected String doInBackground(String... f_url) {
                 int count;
                 try {
+                    String ringoPath = Environment.getExternalStorageDirectory()
+                            .getAbsolutePath() + "/Music/Ringo/";
+                    File ringofolder = new File(ringoPath);
+                    if (!ringofolder.exists()) {
+                        ringofolder.mkdirs();
+                    }
                     String rootPath = Environment.getExternalStorageDirectory()
                             .getAbsolutePath() + "/Music/Ringo/" + folder + "/";
                     File root = new File(rootPath);
@@ -162,6 +178,8 @@ public class downloadPackages extends AppCompatActivity {
                         // closing streams
                         output.close();
                         input.close();
+                        progressInt++;
+                        publishProgress(Integer.toString(progressInt));
                     }
                 } catch (Exception e) {
                     Log.e("Error: ", e.getMessage());
@@ -169,20 +187,27 @@ public class downloadPackages extends AppCompatActivity {
 
                 return null;
             }
-
-
-
+            @Override
+            protected void onProgressUpdate(String... progress) {
+                mProgress.setProgress((Integer.parseInt(progress[0]))*12);
+                System.out.print((Integer.parseInt(progress[0]))*12);
+            }
             /**
              * After completing background task
              * **/
             @Override
             protected void onPostExecute(String file_url) {
                 System.out.println("Downloaded");
+                progressInt=0;
+                mProgress.setProgress(100);
+                mProgress.setVisibility(View.INVISIBLE);
+                Toast.makeText(downloadPackages.this, "Package succesfully DOWNLOADED",
+                        Toast.LENGTH_LONG).show();
             }
 
         }
         @Override
-        public View getView(final int position, View convertView, ViewGroup parent) {
+        public View getView(final int position, final View convertView, ViewGroup parent) {
             View view = convertView;
             if (view == null) {
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -192,14 +217,18 @@ public class downloadPackages extends AppCompatActivity {
             //Handle TextView and display string from your list
             TextView listItemText = (TextView)view.findViewById(R.id.list_item_string);
             listItemText.setText(list.get(position));
+            mProgress = (ProgressBar)findViewById(R.id.progressBar);
+
+
 
             //Handle buttons and add onClickListeners
 
             Button downloadBtn = (Button)view.findViewById(R.id.download_btn);
-
             downloadBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
+                    //downloadBtn.setEnabled(false);
+                    mProgress.setVisibility(View.VISIBLE);
                     folder = list.get(position);
                     final String folder_space_handled = replace(list.get(position));
                     final String[] ur = {
