@@ -113,4 +113,12 @@
         android:layout_toRightOf="@+id/play"
         android:layout_toEndOf="@+id/play"
         android:id="@+id/clear" />
+
+    <Spinner
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
+        android:layout_marginTop="25dp"
+        android:id="@+id/spinneri"
+        android:gravity="center"
+        android:layout_width="match_parent" />
 </RelativeLayout>
