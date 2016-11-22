@@ -57,6 +57,7 @@ public class makeRingtone extends AppCompatActivity {
 
     MediaPlayer mediaplayer = null;
     String[] sounds = new String[0];
+    File[] fileList = null;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,9 +65,15 @@ public class makeRingtone extends AppCompatActivity {
         setContentView(R.layout.activity_make_ringtone);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        String parentDirectory = Environment.getExternalStorageDirectory() + "/Music/Ringo/";
+        String rootPath = Environment.getExternalStorageDirectory()
+                .getAbsolutePath() + "/Music/Ringo/Soundpacks/";
+        File root = new File(rootPath);
+        if (!root.exists()) {
+            root.mkdirs();
+        }
+        String parentDirectory = Environment.getExternalStorageDirectory() + "/Music/Ringo/Soundpacks";
         File dirFileObj = new File(parentDirectory);
-        File[] fileList = dirFileObj.listFiles();
+        fileList = dirFileObj.listFiles();
         String[] list = new String[0];
         for (File inFile : fileList) {
             if (inFile.isDirectory()) {
@@ -140,8 +147,8 @@ public class makeRingtone extends AppCompatActivity {
         play.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                String song = Environment.getExternalStorageDirectory() + "/Music/ME.wav";
-                managerOfSound(song, "play");
+                String song = Environment.getExternalStorageDirectory() + "/Music/Ringo/ME.wav";
+                managerOfSound(song);
             }
         });
         clear.setOnClickListener(new View.OnClickListener() {
@@ -155,42 +162,47 @@ public class makeRingtone extends AppCompatActivity {
             public void onClick(View v) {
             TextView nameView = (TextView) findViewById(R.id.filename);
             String name = nameView.getText().toString();
-            File src = new File(Environment.getExternalStorageDirectory() + "/Music/ME.wav");
-            String rootPath = Environment.getExternalStorageDirectory()
-                    .getAbsolutePath() + "/Music/Ringo/Ringtones/";
-            File root = new File(rootPath);
-            if (!root.exists()) {
-                root.mkdirs();
-            }
-            File dst = new File(Environment.getExternalStorageDirectory() + "/Music/Ringo/Ringtones/" + name + ".wav");
-            FileChannel inChannel = null;
-            FileChannel outChannel = null;
-            try {
-                inChannel = new FileInputStream(src).getChannel();
-                outChannel = new FileOutputStream(dst).getChannel();
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            }
-
-            try
-            {
-                inChannel.transferTo(0, inChannel.size(), outChannel);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-            finally
-            {
-                try {
-                    if (inChannel != null)
-                        inChannel.close();
-                    if (outChannel != null)
-                        outChannel.close();
-                    Toast.makeText(makeRingtone.this, "File saved to Music/Ringo/Ringtones",
-                            Toast.LENGTH_LONG).show();
+            if (sounds.length > 0 && name.length() > 0) {
+                File src = new File(Environment.getExternalStorageDirectory() + "/Music/Ringo/ME.wav");
+                String rootPath = Environment.getExternalStorageDirectory()
+                        .getAbsolutePath() + "/Music/Ringo/Ringtones/";
+                File root = new File(rootPath);
+                if (!root.exists()) {
+                    root.mkdirs();
                 }
-                catch (IOException e) {
+                File dst = new File(Environment.getExternalStorageDirectory() + "/Music/Ringo/Ringtones/" + name + ".wav");
+                FileChannel inChannel = null;
+                FileChannel outChannel = null;
+                try {
+                    inChannel = new FileInputStream(src).getChannel();
+                    outChannel = new FileOutputStream(dst).getChannel();
+                } catch (FileNotFoundException e) {
                     e.printStackTrace();
                 }
+
+                try
+                {
+                    inChannel.transferTo(0, inChannel.size(), outChannel);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                finally
+                {
+                    try {
+                        if (inChannel != null)
+                            inChannel.close();
+                        if (outChannel != null)
+                            outChannel.close();
+                        Toast.makeText(makeRingtone.this, "File saved to Music/Ringo/Ringtones",
+                                Toast.LENGTH_LONG).show();
+                    }
+                    catch (IOException e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                Toast.makeText(makeRingtone.this, "You can't save an empty file, or a file with no name",
+                        Toast.LENGTH_LONG).show();
             }
             }
         });
@@ -198,46 +210,51 @@ public class makeRingtone extends AppCompatActivity {
 
     protected void addSoundToQuery(String button, Spinner spinner) {
         String sound;
-        String soundpack = spinner.getSelectedItem().toString();
-        if (button == "button1") {
-            sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/" + soundpack + "/1.wav";
-            sounds = push(sounds, sound);
-            managerOfSound(sound, button);
-        }
-        else if (button == "button2") {
-            sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/" + soundpack + "/2.wav";
-            sounds = push(sounds, sound);
-            managerOfSound(sound, button);
-        }
-        else if (button == "button3") {
-            sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/" + soundpack + "/3.wav";
-            sounds = push(sounds, sound);
-            managerOfSound(sound, button);
-        }
-        else if (button == "button4") {
-            sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/" + soundpack + "/4.wav";
-            sounds = push(sounds, sound);
-            managerOfSound(sound, button);
-        }
-        else if (button == "button5") {
-            sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/" + soundpack + "/5.wav";
-            sounds = push(sounds, sound);
-            managerOfSound(sound, button);
-        }
-        else if (button == "button6") {
-            sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/" + soundpack + "/6.wav";
-            sounds = push(sounds, sound);
-            managerOfSound(sound, button);
-        }
-        else if (button == "button7") {
-            sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/" + soundpack + "/7.wav";
-            sounds = push(sounds, sound);
-            managerOfSound(sound, button);
-        }
-        else if (button == "button8") {
-            sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/" + soundpack + "/8.wav";
-            sounds = push(sounds, sound);
-            managerOfSound(sound, button);
+        if (fileList.length > 0) {
+            String soundpack = spinner.getSelectedItem().toString();
+            if (button == "button1") {
+                sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/Soundpacks/" + soundpack + "/1.wav";
+                sounds = push(sounds, sound);
+                managerOfSound(sound);
+            }
+            else if (button == "button2") {
+                sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/Soundpacks/" + soundpack + "/2.wav";
+                sounds = push(sounds, sound);
+                managerOfSound(sound);
+            }
+            else if (button == "button3") {
+                sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/Soundpacks/" + soundpack + "/3.wav";
+                sounds = push(sounds, sound);
+                managerOfSound(sound);
+            }
+            else if (button == "button4") {
+                sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/Soundpacks/" + soundpack + "/4.wav";
+                sounds = push(sounds, sound);
+                managerOfSound(sound);
+            }
+            else if (button == "button5") {
+                sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/Soundpacks/" + soundpack + "/5.wav";
+                sounds = push(sounds, sound);
+                managerOfSound(sound);
+            }
+            else if (button == "button6") {
+                sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/Soundpacks/" + soundpack + "/6.wav";
+                sounds = push(sounds, sound);
+                managerOfSound(sound);
+            }
+            else if (button == "button7") {
+                sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/Soundpacks/" + soundpack + "/7.wav";
+                sounds = push(sounds, sound);
+                managerOfSound(sound);
+            }
+            else if (button == "button8") {
+                sound = Environment.getExternalStorageDirectory() + "/Music/Ringo/Soundpacks/" + soundpack + "/8.wav";
+                sounds = push(sounds, sound);
+                managerOfSound(sound);
+            }
+        } else {
+            Toast.makeText(makeRingtone.this, "You can't play sounds without any soundpacks installed.",
+                    Toast.LENGTH_LONG).show();
         }
     }
 
@@ -249,31 +266,39 @@ public class makeRingtone extends AppCompatActivity {
         return longer;
     }
 
-    protected void managerOfSound(String sound, String button) {
+    protected void managerOfSound(String sound) {
         verifyStoragePermissions(this);
-
-        AudioCombine();
-
-        if (mediaplayer != null) {
-            mediaplayer.reset();
-            mediaplayer.release();
+        if (fileList.length > 0) {
+            if (sounds.length > 0) {
+                AudioCombine();
+                if (mediaplayer != null) {
+                    mediaplayer.reset();
+                    mediaplayer.release();
+                }
+                Uri song = Uri.fromFile(new File(sound));
+                mediaplayer = MediaPlayer.create(this, song);
+                mediaplayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+                    @Override
+                    public void onPrepared(MediaPlayer mp) {
+                        if (mp == mediaplayer) {
+                            mediaplayer.start();
+                        }
+                    }
+                });
+            } else {
+                Toast.makeText(makeRingtone.this, "You can't play an empty file",
+                        Toast.LENGTH_LONG).show();
+            }
+        } else {
+            Toast.makeText(makeRingtone.this, "You can't play sounds without any soundpacks installed.",
+                    Toast.LENGTH_LONG).show();
         }
-        Uri song = Uri.fromFile(new File(sound));
-        mediaplayer = MediaPlayer.create(this, song);
-        mediaplayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
-            @Override
-            public void onPrepared(MediaPlayer mp) {
-            if (mp == mediaplayer) {
-                mediaplayer.start();
-            }
-            }
-        });
     }
 
     public void AudioCombine() {
         try {
             String[] args = sounds;
-            DataOutputStream amplifyOutputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Environment.getExternalStorageDirectory() + "/Music/ME.wav")));
+            DataOutputStream amplifyOutputStream = new DataOutputStream(new BufferedOutputStream(new FileOutputStream(Environment.getExternalStorageDirectory() + "/Music/Ringo/ME.wav")));
             DataInputStream[] mergeFilesStream = new DataInputStream[args.length];
             long[] sizes = new long[args.length];
             for (int i = 0; i < args.length; i++) {
@@ -331,7 +356,7 @@ public class makeRingtone extends AppCompatActivity {
         }
         long size = 0;
         try {
-            FileInputStream fileSize = new FileInputStream(Environment.getExternalStorageDirectory() + "/Music/ME.wav");
+            FileInputStream fileSize = new FileInputStream(Environment.getExternalStorageDirectory() + "/Music/Ringo/ME.wav");
             size = fileSize.getChannel().size();
             fileSize.close();
         } catch (FileNotFoundException e1) {
@@ -399,7 +424,7 @@ public class makeRingtone extends AppCompatActivity {
         // out.write(header, 0, 44);
 
         try {
-            RandomAccessFile rFile = new RandomAccessFile(Environment.getExternalStorageDirectory() + "/Music/ME.wav", "rw");
+            RandomAccessFile rFile = new RandomAccessFile(Environment.getExternalStorageDirectory() + "/Music/Ringo/ME.wav", "rw");
             rFile.seek(0);
             rFile.write(header);
             rFile.close();

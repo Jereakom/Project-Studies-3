@@ -123,7 +123,7 @@ public class downloadPackages extends AppCompatActivity {
                 int count;
                 try {
                     String rootPath = Environment.getExternalStorageDirectory()
-                            .getAbsolutePath() + "/Music/Ringo/" + folder + "/";
+                            .getAbsolutePath() + "/Music/Ringo/Soundpacks/" + folder + "/";
                     File root = new File(rootPath);
                     if (!root.exists()) {
                         root.mkdirs();
