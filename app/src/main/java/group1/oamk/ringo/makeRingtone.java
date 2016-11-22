@@ -14,6 +14,8 @@ import android.media.MediaPlayer;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.Spinner;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
@@ -28,6 +30,7 @@ import java.io.IOException;
 import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
+import java.nio.channels.FileChannel;
 
 
 public class makeRingtone extends AppCompatActivity {
@@ -85,6 +88,7 @@ public class makeRingtone extends AppCompatActivity {
         final Button button8 = (Button) findViewById(R.id.button8);
         final Button play = (Button) findViewById(R.id.play);
         final Button clear = (Button) findViewById(R.id.clear);
+        final Button save = (Button) findViewById(R.id.save);
         button.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -144,6 +148,50 @@ public class makeRingtone extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 sounds = new String[0];
+            }
+        });
+        save.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            TextView nameView = (TextView) findViewById(R.id.filename);
+            String name = nameView.getText().toString();
+            File src = new File(Environment.getExternalStorageDirectory() + "/Music/ME.wav");
+            String rootPath = Environment.getExternalStorageDirectory()
+                    .getAbsolutePath() + "/Music/Ringo/Ringtones/";
+            File root = new File(rootPath);
+            if (!root.exists()) {
+                root.mkdirs();
+            }
+            File dst = new File(Environment.getExternalStorageDirectory() + "/Music/Ringo/Ringtones/" + name + ".wav");
+            FileChannel inChannel = null;
+            FileChannel outChannel = null;
+            try {
+                inChannel = new FileInputStream(src).getChannel();
+                outChannel = new FileOutputStream(dst).getChannel();
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            }
+
+            try
+            {
+                inChannel.transferTo(0, inChannel.size(), outChannel);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+            finally
+            {
+                try {
+                    if (inChannel != null)
+                        inChannel.close();
+                    if (outChannel != null)
+                        outChannel.close();
+                    Toast.makeText(makeRingtone.this, "File saved to Music/Ringo/Ringtones",
+                            Toast.LENGTH_LONG).show();
+                }
+                catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
             }
         });
     }
