@@ -128,6 +128,12 @@ public class getRingtones extends AppCompatActivity {
     }
 
     public ArrayList<String> getRingtones() {
+        String rootPath = Environment.getExternalStorageDirectory()
+                .getAbsolutePath() + "/Music/Ringo/Ringtones/";
+        File root = new File(rootPath);
+        if (!root.exists()) {
+            root.mkdirs();
+        }
         ArrayList<String> ringtoneList = new ArrayList<>();
         String parentDirectory = Environment.getExternalStorageDirectory() + "/Music/Ringo/Ringtones";
         File dirFileObj = new File(parentDirectory);
