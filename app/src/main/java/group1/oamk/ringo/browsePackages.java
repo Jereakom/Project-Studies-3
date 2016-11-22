@@ -38,9 +38,27 @@ import java.util.Set;
 
 public class browsePackages extends AppCompatActivity {
     private static final int PICK_CONTACT = 1000;
+
+    @Override
+    protected void onResume() {
+        String action = getIntent().getAction();
+        // Prevent endless loop by adding a unique action, don't restart if action is present
+        if(action == null || !action.equals("Already created")) {
+            Log.v("Example", "Force restart");
+            Intent intent = new Intent(this, browsePackages.class);
+            startActivity(intent);
+            finish();
+        }
+        // Remove the unique action so the next time onResume is called it will restart
+        else
+            getIntent().setAction(null);
+
+        super.onResume();
+    }
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        getIntent().setAction("Already created");
         setContentView(R.layout.activity_browse_packages);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         ListView lv = (ListView) findViewById(R.id.packages_list);
@@ -96,8 +114,18 @@ public class browsePackages extends AppCompatActivity {
             deleteBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    //do something
-                    list.remove(position); //or some other task
+                    String deletion = list.get(position);
+                    File delFile = new File(Environment.getExternalStorageDirectory() + "/Music/Ringo/Soundpacks/" + deletion);
+                    if (delFile.isDirectory())
+                    {
+                        String[] children = delFile.list();
+                        for (int i = 0; i < children.length; i++)
+                        {
+                            new File(delFile, children[i]).delete();
+                        }
+                        delFile.delete();
+                    }
+                    list.remove(position);
                     notifyDataSetChanged();
                 }
             });
@@ -117,16 +145,21 @@ public class browsePackages extends AppCompatActivity {
     }
 
     public ArrayList<String> getPackages() {
-        ArrayList<String> list = new ArrayList<>();
-        String[] f = null;
-        try { f = getAssets().list("soundpackages"); }
-        catch (IOException e) {  }
-        for(String f1 : f){
-            Log.v("names",f1);
-            list.add(f1);
+        String rootPath = Environment.getExternalStorageDirectory()
+                .getAbsolutePath() + "/Music/Ringo/Soundpacks/";
+        File root = new File(rootPath);
+        if (!root.exists()) {
+            root.mkdirs();
+        }
+        ArrayList<String> packageList = new ArrayList<>();
+        String parentDirectory = Environment.getExternalStorageDirectory() + "/Music/Ringo/Soundpacks";
+        File dirFileObj = new File(parentDirectory);
+        File[] fileList = dirFileObj.listFiles();
+        for (File inFile : fileList) {
+            packageList.add(inFile.getAbsolutePath().toString().substring(inFile.getAbsolutePath().toString().lastIndexOf("/")).replace("/", ""));
         }
 
-        return list;
+        return packageList;
     }
 
 

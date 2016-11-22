@@ -1,11 +1,14 @@
 package group1.oamk.ringo;
 
 import android.content.Intent;
+import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+
+import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -35,6 +38,13 @@ public class MainActivity extends AppCompatActivity {
                 testy.setText("Exit");
             }
         });
+
+        String rootPath = Environment.getExternalStorageDirectory()
+                .getAbsolutePath() + "/Music/Ringo/";
+        File root = new File(rootPath);
+        if (!root.exists()) {
+            root.mkdirs();
+        }
     }
 
     public void testThis(View view) {
