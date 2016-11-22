@@ -32,6 +32,8 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 
+import static android.R.attr.name;
+
 
 public class makeRingtone extends AppCompatActivity {
 
@@ -58,6 +60,7 @@ public class makeRingtone extends AppCompatActivity {
     MediaPlayer mediaplayer = null;
     String[] sounds = new String[0];
     File[] fileList = null;
+    String default_soundpack = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -84,6 +87,13 @@ public class makeRingtone extends AppCompatActivity {
                 android.R.layout.simple_spinner_item, list);
         final Spinner spinner = (Spinner) findViewById(R.id.spinneri);
         spinner.setAdapter(adapter);
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            default_soundpack = extras.getString("key");
+        }
+        if (default_soundpack.length()>0) {
+            spinner.setSelection(adapter.getPosition(default_soundpack));
+        }
 
         final Button button = (Button) findViewById(R.id.button);
         final Button button2 = (Button) findViewById(R.id.button2);

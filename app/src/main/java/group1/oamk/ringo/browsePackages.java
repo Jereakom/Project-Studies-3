@@ -132,8 +132,9 @@ public class browsePackages extends AppCompatActivity {
             setBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-
-                    notifyDataSetChanged();
+                    Intent i = new Intent(getApplicationContext(), makeRingtone.class);
+                    i.putExtra("key",list.get(position));
+                    startActivity(i);
                 }
             });
 
