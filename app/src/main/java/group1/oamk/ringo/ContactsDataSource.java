@@ -91,7 +91,12 @@ public class ContactsDataSource {
         Cursor cursor = database.query(MySQLiteHelper.TABLE_CONTACTS,
                 allColumns, whereClause, whereArgs, null, null, null);
 
+        cursor.moveToFirst();
         Contact contact  = cursorToContact(cursor);
+
+        Log.v("number:", ""+contact.getPhone_number());
+        Log.v("pattern:", ""+contact.getPattern());
+
         cursor.close();
         return contact;
     }

@@ -1,80 +1,116 @@
 package group1.oamk.ringo;
 
-import android.Manifest;
 import android.app.Activity;
+import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageManager;
+import android.content.IntentFilter;
 import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteException;
-import android.net.Uri;
 import android.os.Vibrator;
 import android.provider.ContactsContract;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.telephony.PhoneStateListener;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
-import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
-import java.util.List;
 
 
 public class VibrationActivity extends AppCompatActivity {
 
-    private static final int MY_PERMISSIONS_REQUEST_READ_CONTACTS = 0 ;
-
     private static final int PICK_CONTACT = 1000;
 
-    public ContactsDataSource datasource;
+    //public ContactsDataSource datasource = new ContactsDataSource(this);
 
     private long[] pattern;
 
-    public long[] getPattern(String phone_nr){
-
-
-        long[] getPattern = null;
-        try{
-            datasource.open();
-            Contact contact = datasource.getContact(phone_nr);
-            datasource.close();
-            getPattern = contact.getPattern();
-
-        }catch(SQLiteException e){
-            e.printStackTrace();
-        }
-        return getPattern;
-
-    }
-
-
+    IntentFilter filterForCallEvents;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
         setContentView(R.layout.create_vibration_layout);
 
-        datasource = new ContactsDataSource(this);
+        filterForCallEvents = new IntentFilter("android.intent.action.PHONE_STATE");
+    //    registerReceiver(myReceiver, filterForCallEvents);
+        create_vibration_pattern();
+    }
 
     /*
-         datasource.open();
 
-        // datasource.createContact("25443343433", pattern);
-        List<Contact> values = datasource.getAllContacts();
-        Log.v("Values:", ""+values);
-        datasource.close();
+    public final BroadcastReceiver myReceiver = new BroadcastReceiver() {
+        @Override
+        public void onReceive(final Context context, Intent intent) {
+            TelephonyManager telephony = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
+            telephony.listen(new PhoneStateListener(){
+                @Override
+                public void onCallStateChanged(int state, String incomingNumber) {
+                    super.onCallStateChanged(state, incomingNumber);
+
+                    long[] pattern = null;
+
+                    //Make a database call, to get the vibrate pattern
+                    if (state == 1)
+                    {
+                        try {
+
+                            Contact contact = getPattern(incomingNumber);
+                            pattern = contact.getPattern();
+                        }
+
+                        catch (Exception e)
+                        {
+                            e.getStackTrace();
+                        }
+
+                    }
+
+                    //Set the phone to vibrate using that pattern, if there was a mapping
+                    if(pattern != null){
+                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
+                        v.vibrate(pattern, -1);
+                    }
+                    System.out.println("incomingNumber : "+incomingNumber);
+                }
+            },PhoneStateListener.LISTEN_CALL_STATE);
+        }
+    };
+
+    @Override
+    public void onDestroy() {
+        unregisterReceiver(myReceiver);
+        super.onDestroy();
+    }
 
     */
 
-        create_vibration_pattern();
+     //   ContactsDataSource datasource = new ContactsDataSource(this);
+
+
+    public Contact getPattern(String phone_nr){
+
+        Contact returncontact = null;
+
+        long[] getPattern = null;
+        try{
+            MainActivity.datasource.open();
+            returncontact = MainActivity.datasource.getContact(phone_nr);
+            MainActivity.datasource.close();
+            getPattern = returncontact.getPattern();
+
+        }catch(SQLiteException e){
+            e.printStackTrace();
+        }
+        return returncontact;
+
     }
 
 
@@ -115,9 +151,9 @@ public class VibrationActivity extends AppCompatActivity {
                     cursor.close();
                     try
                     {
-                        datasource.open();
-                        datasource.createContact(number, longToString(pattern));
-                        datasource.close();
+                        MainActivity.datasource.open();
+                        MainActivity.datasource.createContact(number, longToString(pattern));
+                        MainActivity.datasource.close();
                     }
                     catch (Exception e){
                         // IGNORANCE IS THE BEST POLICY
@@ -162,6 +198,8 @@ public class VibrationActivity extends AppCompatActivity {
         vibrator = (Vibrator) getSystemService(MainActivity.VIBRATOR_SERVICE);
 
         Button preview = (Button)findViewById(R.id.preview_button);
+
+        Button contact = (Button)findViewById(R.id.contact_test);
 
         Button btn = (Button)findViewById(R.id.vibrate_button);
 
@@ -243,6 +281,18 @@ public class VibrationActivity extends AppCompatActivity {
 
         });
 
+        contact.setOnTouchListener(new View.OnTouchListener() {
+
+            @Override
+            public boolean onTouch(View v, MotionEvent event) {
+                Contact contact = getPattern("+358504633346");
+                Log.v("patternArray:", ""+contact);
+                return true;
+            }
+
+
+        });
+
         preview.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
@@ -274,6 +324,8 @@ public class VibrationActivity extends AppCompatActivity {
         });
 
     }
+
+
 }
 
 
