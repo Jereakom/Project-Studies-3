@@ -7,8 +7,8 @@
     <uses-permission android:name="android.permission.READ_CONTACTS" />
     <uses-permission android:name="android.permission.WRITE_CONTACTS" />
     <uses-permission android:name="android.permission.VIBRATE"/>
-    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
-
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />git 
+    <uses-permission android:name="android.permission.INTERNET" />
 
 
     <application
@@ -37,8 +37,15 @@
             android:name=".getRingtones"
             android:label="Your Ringtones"
             android:theme="@style/AppTheme.NoActionBar" />
-
-    <activity android:name=".VibrationActivity"/>
+        <activity android:name=".makeRingtone"
+            android:label="Make a ringtone"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity android:name=".VibrationActivity" />
+        <activity
+            android:name=".browsePackages"
+            android:label="Soundpacks" />
+        <activity android:name=".downloadPackages"
+            android:label="Download Soundpacks"/>
 
     </application>
 
