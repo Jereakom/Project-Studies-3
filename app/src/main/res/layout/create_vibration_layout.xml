@@ -22,6 +22,14 @@
                 android:layout_marginStart="17dp"
                 android:layout_marginBottom="27dp"
                 android:id="@+id/txt" />
+
+            <Button
+                android:text="Contact test"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_above="@+id/txt"
+                android:layout_centerHorizontal="true"
+                android:id="@+id/contact_test" />
         </RelativeLayout>
 
         <Button
@@ -76,14 +84,14 @@
             android:layout_centerHorizontal="true" />
 
         <TextView
-            android:text="Click Start buton to start making Patterns. Then press VIBRATE button to make desirable patter. Once you are done press STOP button to stop making pattern."
-            android:id="@+id/textView"
-            android:layout_width="291dp"
+            android:text="0"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:layout_alignLeft="@+id/assign_button"
-            android:layout_alignStart="@+id/assign_button" />
-
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="44dp"
+            android:id="@+id/time" />
     </RelativeLayout>
+
 
 </LinearLayout>
