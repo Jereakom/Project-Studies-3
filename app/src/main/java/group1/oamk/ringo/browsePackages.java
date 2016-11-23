@@ -1,11 +1,14 @@
 package group1.oamk.ringo;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
@@ -13,6 +16,7 @@ import android.os.Environment;
 import android.provider.ContactsContract;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.Snackbar;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -38,6 +42,12 @@ import java.util.Set;
 
 public class browsePackages extends AppCompatActivity {
     private static final int PICK_CONTACT = 1000;
+    private static final int REQUEST_STORAGE = 1;
+    private static String[] PERMISSIONS_STORAGE = {
+            Manifest.permission.READ_EXTERNAL_STORAGE
+    };
+
+    MediaPlayer mediaplayer = null;
 
     @Override
     protected void onResume() {
@@ -137,10 +147,53 @@ public class browsePackages extends AppCompatActivity {
                     startActivity(i);
                 }
             });
+            listItemText.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    String soundpackName = list.get(position);
+                    File soundpack = new File(Environment.getExternalStorageDirectory() + "/Music/Ringo/Soundpacks/" + soundpackName);
+                    if (soundpack.isDirectory())
+                    {
+                        String[] children = soundpack.list();
+                        managerOfSound(soundpack, children);
+                    }
+                }
+            });
 
             return view;
         }
     }
+
+    public static void verifyStoragePermissions(Activity activity) {
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    activity,
+                    PERMISSIONS_STORAGE,
+                    REQUEST_STORAGE
+            );
+        }
+    }
+
+    protected void managerOfSound(File soundpack, String[] sound) {
+        verifyStoragePermissions(this);
+        for (int i = 0; i < sound.length;i++) {
+            Uri song = Uri.fromFile(new File(soundpack, sound[i]));
+            if (mediaplayer != null) {
+                mediaplayer.reset();
+                mediaplayer.release();
+            }
+            mediaplayer = MediaPlayer.create(this, song);
+            mediaplayer.start();
+            try {
+                Thread.sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
     public void goToDownload(View view) {
         startActivity(new Intent(browsePackages.this, downloadPackages.class));
     }

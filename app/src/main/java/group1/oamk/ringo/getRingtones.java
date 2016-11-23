@@ -8,6 +8,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.database.Cursor;
+import android.media.MediaPlayer;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -16,7 +17,6 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,8 +35,12 @@ public class getRingtones extends AppCompatActivity {
     private static final int REQUEST_CONTACTS = 1;
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_CONTACTS,
-            Manifest.permission.WRITE_CONTACTS
+            Manifest.permission.WRITE_CONTACTS,
+            Manifest.permission.READ_EXTERNAL_STORAGE
     };
+
+    MediaPlayer mediaplayer = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -116,10 +120,17 @@ public class getRingtones extends AppCompatActivity {
                 @Override
                 public void onClick(View v) {
                     ringtone_name = list.get(position);
-                    Log.d("ringtone : ", ringtone_name);
                     Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
                     startActivityForResult(intent, PICK_CONTACT);
                     notifyDataSetChanged();
+                }
+            });
+            listItemText.setOnClickListener(new View.OnClickListener(){
+                @Override
+                public void onClick(View v) {
+                    String soundName = list.get(position);
+                    File ringtone = new File(Environment.getExternalStorageDirectory() + "/Music/Ringo/Ringtones/" + soundName + ".wav");
+                    managerOfSound(ringtone);
                 }
             });
 
@@ -162,6 +173,24 @@ public class getRingtones extends AppCompatActivity {
                 }
                 break;
         }
+    }
+
+    protected void managerOfSound(File sound) {
+        verifyStoragePermissions(this);
+        if (mediaplayer != null) {
+            mediaplayer.reset();
+            mediaplayer.release();
+        }
+        Uri song = Uri.fromFile(sound);
+        mediaplayer = MediaPlayer.create(this, song);
+        mediaplayer.setOnPreparedListener(new MediaPlayer.OnPreparedListener() {
+            @Override
+            public void onPrepared(MediaPlayer mp) {
+                if (mp == mediaplayer) {
+                    mediaplayer.start();
+                }
+            }
+        });
     }
 
     public void successMessage(){
