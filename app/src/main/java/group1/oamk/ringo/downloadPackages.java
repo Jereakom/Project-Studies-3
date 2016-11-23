@@ -79,6 +79,39 @@ public class downloadPackages extends AppCompatActivity {
             e.printStackTrace();
         }}
 
+        ArrayList<String> packageList = new ArrayList<>();
+        String parentDirectory = Environment.getExternalStorageDirectory() + "/Music/Ringo/Soundpacks";
+        File dirFileObj = new File(parentDirectory);
+        File[] fileList = dirFileObj.listFiles();
+        for (File inFile : fileList) {
+            packageList.add(inFile.getAbsolutePath().substring(inFile.getAbsolutePath().lastIndexOf("/")).replace("/", ""));
+        }
+        Iterator<String> iter = List.iterator();
+
+        while (iter.hasNext()) {
+            String str = iter.next();
+
+            if (packageList.contains(str))
+                iter.remove();
+        }
+        if (List.isEmpty()) {
+            Toast.makeText(this.getApplicationContext(), "There are no more sound packs left to download", Toast.LENGTH_LONG).show();
+
+            Thread thread = new Thread(){
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(100);
+                        finish();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            thread.start();
+        }
+
             adapter = new MyPackagesAdapter(List, this);
 
         lv.setAdapter(adapter);
@@ -297,7 +330,7 @@ public class downloadPackages extends AppCompatActivity {
                 JSONArray jArray = jObject.getJSONArray("soundpacks");
                 for (int i = 0; i < jArray.length(); i++) {
                     JSONObject jObj = jArray.getJSONObject(i);
-                    if(!jObj.getString("folder").toString().equals("list.php") ){
+                    if(!jObj.getString("folder").toString().equals("list.php")) {
                     list.add(jObj.getString("folder"));}
                 }
             } catch (JSONException e) {
