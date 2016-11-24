@@ -2,46 +2,29 @@ package group1.oamk.ringo;
 
 import android.Manifest;
 import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
 import android.media.MediaPlayer;
-import android.media.RingtoneManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.provider.ContactsContract;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.provider.ContactsContract.Contacts;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 public class browsePackages extends AppCompatActivity {
-    private static final int PICK_CONTACT = 1000;
     private static final int REQUEST_STORAGE = 1;
     private static String[] PERMISSIONS_STORAGE = {
             Manifest.permission.READ_EXTERNAL_STORAGE
@@ -52,14 +35,12 @@ public class browsePackages extends AppCompatActivity {
     @Override
     protected void onResume() {
         String action = getIntent().getAction();
-        // Prevent endless loop by adding a unique action, don't restart if action is present
         if(action == null || !action.equals("Already created")) {
             Log.v("Example", "Force restart");
             Intent intent = new Intent(this, browsePackages.class);
             startActivity(intent);
             finish();
         }
-        // Remove the unique action so the next time onResume is called it will restart
         else
             getIntent().setAction(null);
 
@@ -70,7 +51,6 @@ public class browsePackages extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         getIntent().setAction("Already created");
         setContentView(R.layout.activity_browse_packages);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         ListView lv = (ListView) findViewById(R.id.packages_list);
 
         MyPackagesAdapter adapter = new MyPackagesAdapter(getPackages(), this);
@@ -79,12 +59,12 @@ public class browsePackages extends AppCompatActivity {
     }
 
     public class MyPackagesAdapter extends BaseAdapter implements ListAdapter {
-        private ArrayList<String> list = new ArrayList<String>();
+        private ArrayList<String> list = new ArrayList<>();
         private Context context;
 
 
 
-        public MyPackagesAdapter(ArrayList<String> list, Context context) {
+        MyPackagesAdapter(ArrayList<String> list, Context context) {
             this.list = list;
             this.context = context;
         }
@@ -210,7 +190,7 @@ public class browsePackages extends AppCompatActivity {
         File dirFileObj = new File(parentDirectory);
         File[] fileList = dirFileObj.listFiles();
         for (File inFile : fileList) {
-            packageList.add(inFile.getAbsolutePath().toString().substring(inFile.getAbsolutePath().toString().lastIndexOf("/")).replace("/", ""));
+            packageList.add(inFile.getAbsolutePath().substring(inFile.getAbsolutePath().lastIndexOf("/")).replace("/", ""));
         }
 
         return packageList;

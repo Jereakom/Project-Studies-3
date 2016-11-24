@@ -29,11 +29,9 @@ public class MainActivity extends AppCompatActivity {
 
     public static void verifyPhoneStatePermission(Activity activity) {
 
-        // Check if we have read phone state permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE);
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
             ActivityCompat.requestPermissions(
                     activity,
                     READ_PHONE_STATE_PERMISSIONS,
@@ -64,7 +62,6 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 finish();
                 System.exit(0);
                 TextView testy = (TextView)findViewById(R.id.test);
@@ -78,12 +75,6 @@ public class MainActivity extends AppCompatActivity {
         if (!root.exists()) {
             root.mkdirs();
         }
-    }
-
-    public void testThis(View view) {
-        CharSequence test = "THIS IS ANOTHER TEST";
-        TextView testy = (TextView)findViewById(R.id.test);
-        testy.setText(test);
     }
 
     public void goToGallery(View view) {

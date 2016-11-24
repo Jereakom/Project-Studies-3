@@ -12,7 +12,6 @@ import java.util.List;
 
 public class ContactsDataSource {
 
-    // Database fields
     private SQLiteDatabase database;
     private MySQLiteHelper dbHelper;
     private String[] allColumns = { MySQLiteHelper.COLUMN_ID,

@@ -32,8 +32,6 @@ import java.nio.ByteBuffer;
 import java.nio.ByteOrder;
 import java.nio.channels.FileChannel;
 
-import static android.R.attr.name;
-
 
 public class makeRingtone extends AppCompatActivity {
 
@@ -44,11 +42,9 @@ public class makeRingtone extends AppCompatActivity {
     };
 
     public static void verifyStoragePermissions(Activity activity) {
-        // Check if we have write permission
         int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.WRITE_EXTERNAL_STORAGE);
 
         if (permission != PackageManager.PERMISSION_GRANTED) {
-            // We don't have permission so prompt the user
             ActivityCompat.requestPermissions(
                     activity,
                     PERMISSIONS_STORAGE,
@@ -80,7 +76,7 @@ public class makeRingtone extends AppCompatActivity {
         String[] list = new String[0];
         for (File inFile : fileList) {
             if (inFile.isDirectory()) {
-                list = push(list, inFile.getAbsolutePath().toString().substring(inFile.getAbsolutePath().toString().lastIndexOf("/")).replace("/", ""));
+                list = push(list, inFile.getAbsolutePath().substring(inFile.getAbsolutePath().lastIndexOf("/")).replace("/", ""));
             }
         }
         ArrayAdapter<String> adapter = new ArrayAdapter<String>(this,
@@ -322,8 +318,6 @@ public class makeRingtone extends AppCompatActivity {
                     mergeFilesStream[i].skip(24);
                     byte[] sampleRt = new byte[4];
                     mergeFilesStream[i].read(sampleRt);
-                    ByteBuffer bbInt = ByteBuffer.wrap(sampleRt).order(ByteOrder.LITTLE_ENDIAN);
-                    final int RECORDER_SAMPLERATE = bbInt.getInt();
                     mergeFilesStream[i].skip(16);
                 } else {
                     mergeFilesStream[i].skip(44);
@@ -431,7 +425,6 @@ public class makeRingtone extends AppCompatActivity {
         header[41] = (byte) ((size >> 8) & 0xff);
         header[42] = (byte) ((size >> 16) & 0xff);
         header[43] = (byte) ((size >> 24) & 0xff);
-        // out.write(header, 0, 44);
 
         try {
             RandomAccessFile rFile = new RandomAccessFile(Environment.getExternalStorageDirectory() + "/Music/Ringo/ME.wav", "rw");

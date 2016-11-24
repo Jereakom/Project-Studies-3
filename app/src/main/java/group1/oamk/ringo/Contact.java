@@ -27,7 +27,6 @@ public class Contact {
         this.pattern = pattern;
     }
 
-    // Will be used by the ArrayAdapter in the ListView
     @Override
     public String toString() {
         return pattern;

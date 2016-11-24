@@ -6,7 +6,6 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 
-import android.app.Activity;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -44,12 +43,12 @@ public class makeSound extends AppCompatActivity {
     }
 
     private void setButtonHandlers() {
-        ((Button)findViewById(R.id.start_recording_button)).setOnClickListener(btnClick);
-        ((Button)findViewById(R.id.stop_recording_button)).setOnClickListener(btnClick);
+        (findViewById(R.id.start_recording_button)).setOnClickListener(btnClick);
+        (findViewById(R.id.stop_recording_button)).setOnClickListener(btnClick);
     }
 
     private void enableButton(int id,boolean isEnable){
-        ((Button)findViewById(id)).setEnabled(isEnable);
+        (findViewById(id)).setEnabled(isEnable);
     }
 
     private void enableButtons(boolean isRecording) {
@@ -117,7 +116,7 @@ public class makeSound extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        int read = 0;
+        int read;
 
         if(null != os){
             while(isRecording){
@@ -164,10 +163,10 @@ public class makeSound extends AppCompatActivity {
     }
 
     private void copyWaveFile(String inFilename,String outFilename){
-        FileInputStream in = null;
-        FileOutputStream out = null;
+        FileInputStream in;
+        FileOutputStream out;
         long totalAudioLen = 0;
-        long totalDataLen = totalAudioLen + 36;
+        long totalDataLen;
         long longSampleRate = RECORDER_SAMPLERATE;
         int channels = 1;
         long byteRate = RECORDER_BPP * RECORDER_SAMPLERATE * channels/8;
@@ -179,8 +178,6 @@ public class makeSound extends AppCompatActivity {
             out = new FileOutputStream(outFilename);
             totalAudioLen = in.getChannel().size();
             totalDataLen = totalAudioLen + 36;
-
-            // AppLog.logString("File size: " + totalDataLen);
 
             WriteWaveFileHeader(out, totalAudioLen, totalDataLen,
                     longSampleRate, channels, byteRate);
@@ -258,7 +255,6 @@ public class makeSound extends AppCompatActivity {
         public void onClick(View v) {
             switch(v.getId()){
                 case R.id.start_recording_button:{
-                    //  AppLog.logString("Start Recording");
 
                     enableButtons(true);
                     startRecording();
@@ -266,7 +262,6 @@ public class makeSound extends AppCompatActivity {
                     break;
                 }
                 case R.id.stop_recording_button:{
-                    //     AppLog.logString("Start Recording");
 
                     enableButtons(false);
                     stopRecording();

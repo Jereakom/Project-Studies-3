@@ -72,7 +72,7 @@ public class getRingtones extends AppCompatActivity {
 
 
 
-        public MyCustomAdapter(ArrayList<String> list, Context context) {
+        MyCustomAdapter(ArrayList<String> list, Context context) {
             this.list = list;
             this.context = context;
         }
@@ -150,7 +150,7 @@ public class getRingtones extends AppCompatActivity {
         File dirFileObj = new File(parentDirectory);
         File[] fileList = dirFileObj.listFiles();
         for (File inFile : fileList) {
-                ringtoneList.add(inFile.getAbsolutePath().toString().substring(inFile.getAbsolutePath().toString().lastIndexOf("/")).replace(".wav", "").replace("/", ""));
+                ringtoneList.add(inFile.getAbsolutePath().substring(inFile.getAbsolutePath().lastIndexOf("/")).replace(".wav", "").replace("/", ""));
         }
 
         return ringtoneList;
@@ -224,7 +224,6 @@ public String ringtone_name;
                 return;
             }
 
-            final String storage = Environment.getExternalStorageDirectory().getPath();
             final File file = new File("storage/emulated/0/Music/Ringo/Ringtones", ringtone_name + ".wav");
             final String value = Uri.fromFile(file).toString();
 
