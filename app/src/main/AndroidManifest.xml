@@ -45,10 +45,14 @@
         <activity android:name=".VibrationActivity" />
         <activity
             android:name=".browsePackages"
-            android:label="Soundpacks" />
+            android:label="Soundpacks"
+            android:theme="@style/AppTheme.NoActionBar"/>
         <activity
             android:name=".downloadPackages"
             android:label="Download Soundpacks" />
+        <activity
+            android:name=".browsePatterns"
+            android:label="Browse Patterns" />
         <activity android:name=".makeSound"></activity>
     </application>
 

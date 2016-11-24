@@ -1,119 +1,60 @@
 package group1.oamk.ringo;
 
+import android.Manifest;
 import android.app.Activity;
-import android.content.BroadcastReceiver;
 import android.content.ContentResolver;
-import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
-import android.database.sqlite.SQLiteException;
-import android.os.Vibrator;
-import android.provider.ContactsContract;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.telephony.PhoneStateListener;
-import android.telephony.TelephonyManager;
+import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
+
+import static group1.oamk.ringo.MainActivity.datasource;
+import static group1.oamk.ringo.MainActivity.vib;
 
 
 public class VibrationActivity extends AppCompatActivity {
 
     private static final int PICK_CONTACT = 1000;
 
-    //public ContactsDataSource datasource = new ContactsDataSource(this);
-
     private long[] pattern;
 
-    IntentFilter filterForCallEvents;
+    private static final int REQUEST_CONTACT_PERMISSIONS = 1;
+
+    private static String[] READ_CONTACT_PERMISSIONS = {
+            Manifest.permission.READ_CONTACTS
+    };
+
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.create_vibration_layout);
 
-        filterForCallEvents = new IntentFilter("android.intent.action.PHONE_STATE");
-    //    registerReceiver(myReceiver, filterForCallEvents);
+        int permissionContact = ActivityCompat.checkSelfPermission(VibrationActivity.this, Manifest.permission.READ_CONTACTS);
+
+        if (permissionContact != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    VibrationActivity.this,
+                    READ_CONTACT_PERMISSIONS,
+                    REQUEST_CONTACT_PERMISSIONS
+            );
+        }
+
         create_vibration_pattern();
     }
-
-    /*
-
-    public final BroadcastReceiver myReceiver = new BroadcastReceiver() {
-        @Override
-        public void onReceive(final Context context, Intent intent) {
-            TelephonyManager telephony = (TelephonyManager)context.getSystemService(Context.TELEPHONY_SERVICE);
-            telephony.listen(new PhoneStateListener(){
-                @Override
-                public void onCallStateChanged(int state, String incomingNumber) {
-                    super.onCallStateChanged(state, incomingNumber);
-
-                    long[] pattern = null;
-
-                    //Make a database call, to get the vibrate pattern
-                    if (state == 1)
-                    {
-                        try {
-
-                            Contact contact = getPattern(incomingNumber);
-                            pattern = contact.getPattern();
-                        }
-
-                        catch (Exception e)
-                        {
-                            e.getStackTrace();
-                        }
-
-                    }
-
-                    //Set the phone to vibrate using that pattern, if there was a mapping
-                    if(pattern != null){
-                        Vibrator v = (Vibrator) getSystemService(Context.VIBRATOR_SERVICE);
-                        v.vibrate(pattern, -1);
-                    }
-                    System.out.println("incomingNumber : "+incomingNumber);
-                }
-            },PhoneStateListener.LISTEN_CALL_STATE);
-        }
-    };
-
-    @Override
-    public void onDestroy() {
-        unregisterReceiver(myReceiver);
-        super.onDestroy();
-    }
-
-    */
-
-     //   ContactsDataSource datasource = new ContactsDataSource(this);
-
-
-    public Contact getPattern(String phone_nr){
-
-        Contact returncontact = null;
-
-        long[] getPattern = null;
-        try{
-            MainActivity.datasource.open();
-            returncontact = MainActivity.datasource.getContact(phone_nr);
-            MainActivity.datasource.close();
-            getPattern = returncontact.getPattern();
-
-        }catch(SQLiteException e){
-            e.printStackTrace();
-        }
-        return returncontact;
-
-    }
-
-
 
     @Override
     public void onActivityResult(int reqCode, int resultCode, Intent data) {
@@ -124,6 +65,7 @@ public class VibrationActivity extends AppCompatActivity {
                 if (resultCode == Activity.RESULT_OK) {
 
                     String number = "";
+                    String contactName = "";
 
                     ContentResolver cr = getContentResolver();
                     Cursor cursor = cr.query(data.getData(), null, null, null, null);
@@ -131,6 +73,8 @@ public class VibrationActivity extends AppCompatActivity {
                     while (cursor.moveToNext()) {
                         String contactId = cursor.getString(cursor
                                 .getColumnIndex(ContactsContract.Contacts._ID));
+                        contactName = cursor.getString(cursor
+                                .getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME));
                         if (Integer
                                 .parseInt(cursor.getString(cursor
                                         .getColumnIndex(ContactsContract.Contacts.HAS_PHONE_NUMBER))) > 0) {
@@ -151,22 +95,23 @@ public class VibrationActivity extends AppCompatActivity {
                     cursor.close();
                     try
                     {
-                        MainActivity.datasource.open();
-                        MainActivity.datasource.createContact(number, longToString(pattern));
-                        MainActivity.datasource.close();
+                        datasource.open();
+                        datasource.createContact(contactName, number, longToString(pattern));
+                        datasource.close();
+                        Toast.makeText(VibrationActivity.this, "Pattern assigned to contact!", Toast.LENGTH_SHORT).show();
+
                     }
                     catch (Exception e){
                         // IGNORANCE IS THE BEST POLICY
                     }
 
                 }
-
         }
     }
 
 
 
-    private String longToString(long[] longArray)
+    public static String longToString(long[] longArray)
     {
         String resultString = "";
 
@@ -187,21 +132,17 @@ public class VibrationActivity extends AppCompatActivity {
 
     private void create_vibration_pattern() {
 
-        final Vibrator vibrator;
-
         final ArrayList length = new ArrayList();
 
         length.add((long)0);
 
         final long[] durationArray = {0,0,0} ;
 
-        vibrator = (Vibrator) getSystemService(MainActivity.VIBRATOR_SERVICE);
-
         Button preview = (Button)findViewById(R.id.preview_button);
 
-        Button contact = (Button)findViewById(R.id.contact_test);
-
         Button btn = (Button)findViewById(R.id.vibrate_button);
+
+        Button save = (Button)findViewById(R.id.save_button);
 
         Button end = (Button)findViewById(R.id.end_button);
 
@@ -214,10 +155,16 @@ public class VibrationActivity extends AppCompatActivity {
         assign_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-                startActivityForResult(intent, PICK_CONTACT);
+                if (pattern == null)
+                {
+                    Toast.makeText(VibrationActivity.this, "Press \"Store\" to store the pattern before assigning!", Toast.LENGTH_LONG).show();
 
-                Log.v("CONTACT:", "");
+                }
+                else
+                {
+                    Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                    startActivityForResult(intent, PICK_CONTACT);
+                }
             }
         });
 
@@ -238,7 +185,7 @@ public class VibrationActivity extends AppCompatActivity {
                     }
                     durationArray[0] = System.currentTimeMillis();
                     Log.v("PressTime", ""+durationArray[0]);
-                    vibrator.vibrate(60000);
+                    vib.vibrate(60000);
 
                 } else if (action == MotionEvent.ACTION_UP) {
                     durationArray[1] = System.currentTimeMillis();
@@ -249,7 +196,7 @@ public class VibrationActivity extends AppCompatActivity {
                     durationArray[2] = duration;
 
                     length.add(duration);
-                    vibrator.cancel();
+                    vib.cancel();
 
                 }
 
@@ -281,17 +228,52 @@ public class VibrationActivity extends AppCompatActivity {
 
         });
 
-        contact.setOnTouchListener(new View.OnTouchListener() {
+        save.setOnTouchListener(new View.OnTouchListener() {
 
             @Override
             public boolean onTouch(View v, MotionEvent event) {
-                Contact contact = getPattern("+358504633346");
-                Log.v("patternArray:", ""+contact);
+                if (event.getAction() != 0)
+                {
+                    return true;
+                }
+                EditText name = (EditText)findViewById(R.id.pattern_name);
+                String patternName = name.getText().toString();
+
+                String number = "";
+
+                if (patternName.equals(""))
+                {
+                    Toast.makeText(VibrationActivity.this, "Name cannot be blank", Toast.LENGTH_SHORT).show();
+                    return true;
+                }
+
+
+
+                if (pattern == null)
+                {
+                    Toast.makeText(VibrationActivity.this, "Press \"Store\" to store the pattern before saving!", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+
+                try
+                {
+                    datasource.open();
+                    datasource.createContact(patternName, number, longToString(pattern));
+                    datasource.close();
+                    Toast.makeText(VibrationActivity.this, "Pattern saved!", Toast.LENGTH_SHORT).show();
+
+                }
+                catch (Exception e){
+                    // IGNORANCE IS THE BEST POLICY
+                }
+
                 return true;
             }
 
 
         });
+
+
 
         preview.setOnTouchListener(new View.OnTouchListener() {
 
@@ -304,7 +286,7 @@ public class VibrationActivity extends AppCompatActivity {
                     longth[i] = (long) length.get(i);
                 }
 
-                vibrator.vibrate(longth, -1);
+                vib.vibrate(longth, -1);
                 return true;
             }
 

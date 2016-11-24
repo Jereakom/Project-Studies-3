@@ -1,5 +1,6 @@
 package group1.oamk.ringo;
 
+
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -9,6 +10,7 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import android.graphics.Color;
+
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -17,11 +19,20 @@ import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MotionEvent;
 import android.view.View;
+
 import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import static android.R.id.list;
+
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 
 public class makeSound extends AppCompatActivity {
 

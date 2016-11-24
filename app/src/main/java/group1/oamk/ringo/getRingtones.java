@@ -13,6 +13,7 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.ContactsContract;
+import android.provider.ContactsContract.Contacts;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
@@ -25,7 +26,7 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.provider.ContactsContract.Contacts;
+import android.widget.Toast;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -45,9 +46,9 @@ public class getRingtones extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_get_ringtones);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+
         ListView lv = (ListView) findViewById(R.id.ringtone_list);
-        setSupportActionBar(toolbar);
+
 
         MyCustomAdapter adapter = new MyCustomAdapter(getRingtones(), this);
               lv.setAdapter(adapter);
@@ -151,6 +152,26 @@ public class getRingtones extends AppCompatActivity {
         File[] fileList = dirFileObj.listFiles();
         for (File inFile : fileList) {
                 ringtoneList.add(inFile.getAbsolutePath().substring(inFile.getAbsolutePath().lastIndexOf("/")).replace(".wav", "").replace("/", ""));
+        }
+
+        if (ringtoneList.size() == 0)
+        {
+            Toast.makeText(this.getApplicationContext(), "You have no custom ringtones!", Toast.LENGTH_LONG).show();
+
+            Thread thread = new Thread(){
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(1);
+                        finish();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            thread.start();
+
         }
 
         return ringtoneList;
