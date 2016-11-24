@@ -49,6 +49,9 @@
         <activity
             android:name=".downloadPackages"
             android:label="Download Soundpacks" />
+        <activity
+            android:name=".browsePatterns"
+            android:label="Browse Patterns" />
         <activity android:name=".makeSound"></activity>
     </application>
 

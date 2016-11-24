@@ -13,12 +13,12 @@ import java.util.List;
 public class ContactsDataSource {
 
     private SQLiteDatabase database;
-    private MySQLiteHelper dbHelper;
-    private String[] allColumns = { MySQLiteHelper.COLUMN_ID,
-            MySQLiteHelper.COLUMN_PATTERN };
+    private SQLiteHelper dbHelper;
+    private String[] allColumns = { SQLiteHelper.COLUMN_ID,
+            SQLiteHelper.COLUMN_PATTERN, SQLiteHelper.COLUMN_NAME, SQLiteHelper.COLUMN_NUMBER };
 
     public ContactsDataSource(Context context) {
-        dbHelper = new MySQLiteHelper(context);
+        dbHelper = new SQLiteHelper(context);
     }
 
     public void open() throws SQLException {
@@ -29,15 +29,16 @@ public class ContactsDataSource {
         dbHelper.close();
     }
 
-    public Contact createContact(String number, String pattern) {
+    public Contact createContact(String name, String number, String pattern) {
         ContentValues values = new ContentValues();
 
-        values.put(MySQLiteHelper.COLUMN_PATTERN, pattern);
-        values.put(MySQLiteHelper.COLUMN_ID, number);
+        values.put(SQLiteHelper.COLUMN_PATTERN, pattern);
+        values.put(SQLiteHelper.COLUMN_NUMBER, number);
+        values.put(SQLiteHelper.COLUMN_NAME, name);
         long insertId = 0;
         try
         {
-            insertId = database.insertOrThrow(MySQLiteHelper.TABLE_CONTACTS, null,
+            insertId = database.insertOrThrow(SQLiteHelper.TABLE_CONTACTS, null,
                     values);
 
         }
@@ -46,8 +47,8 @@ public class ContactsDataSource {
         {
             Log.w("EXCEPTION", "createContact: ",e );
         }
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_CONTACTS,
-                allColumns, MySQLiteHelper.COLUMN_ID + " = " + number, null,
+        Cursor cursor = database.query(SQLiteHelper.TABLE_CONTACTS,
+                allColumns, SQLiteHelper.COLUMN_ID + " = " + insertId, null,
                 null, null, null);
         cursor.moveToFirst();
         Contact newContact = cursorToContact(cursor);
@@ -57,15 +58,21 @@ public class ContactsDataSource {
 
     public void deleteContact(Contact contact) {
         String phone_number = contact.getPhone_number();
+        String name = contact.getName();
+        String[] whereArgs = new String[]{
+                phone_number,
+                name
+        };
+        database.delete(SQLiteHelper.TABLE_CONTACTS, SQLiteHelper.COLUMN_NUMBER
+                + " = ?  OR " + SQLiteHelper.COLUMN_NAME + " = ?", whereArgs);
+
         System.out.println("Pattern deleted for phone number: " + phone_number);
-        database.delete(MySQLiteHelper.TABLE_CONTACTS, MySQLiteHelper.COLUMN_ID
-                + " = " + phone_number, null);
     }
 
     public List<Contact> getAllContacts() {
         List<Contact> contacts = new ArrayList<Contact>();
 
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_CONTACTS,
+        Cursor cursor = database.query(SQLiteHelper.TABLE_CONTACTS,
                 allColumns, null, null, null, null, null);
 
         cursor.moveToFirst();
@@ -87,7 +94,7 @@ public class ContactsDataSource {
                 phone_number
         };
 
-        Cursor cursor = database.query(MySQLiteHelper.TABLE_CONTACTS,
+        Cursor cursor = database.query(SQLiteHelper.TABLE_CONTACTS,
                 allColumns, whereClause, whereArgs, null, null, null);
 
         cursor.moveToFirst();
@@ -102,8 +109,9 @@ public class ContactsDataSource {
 
     private Contact cursorToContact(Cursor cursor) {
         Contact contact = new Contact();
-        contact.setPhone_number(cursor.getString(0));
         contact.setPattern(cursor.getString(1));
+        contact.setName(cursor.getString(2));
+        contact.setPhone_number(cursor.getString(3));
         return contact;
     }
 }

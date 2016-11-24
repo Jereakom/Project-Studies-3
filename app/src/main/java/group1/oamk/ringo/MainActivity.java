@@ -4,13 +4,13 @@ import android.Manifest;
 import android.app.Activity;
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.os.Bundle;
 import android.os.Environment;
+import android.os.Vibrator;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-
 
 import java.io.File;
 
@@ -18,7 +18,11 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_PHONE_STATE = 1;
 
+
+
     public static ContactsDataSource datasource;
+
+    public static Vibrator vib;
 
     private static String[] READ_PHONE_STATE_PERMISSIONS = {
             Manifest.permission.READ_PHONE_STATE,
@@ -28,17 +32,21 @@ public class MainActivity extends AppCompatActivity {
 
 
 
+
+
     public static void verifyPhoneStatePermission(Activity activity) {
 
-        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE);
+        int permissionState = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE);
 
-        if (permission != PackageManager.PERMISSION_GRANTED) {
+        if (permissionState != PackageManager.PERMISSION_GRANTED) {
             ActivityCompat.requestPermissions(
                     activity,
                     READ_PHONE_STATE_PERMISSIONS,
                     REQUEST_PHONE_STATE
             );
         }
+
+
     }
 
     @Override
@@ -47,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         datasource = new ContactsDataSource(MainActivity.this);
 
-
+        vib = (Vibrator) getSystemService(this.VIBRATOR_SERVICE);
 
         final Button button = (Button) findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
@@ -82,6 +90,11 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    public void goToPatterns(View view) {
+        startActivity(new Intent(MainActivity.this, browsePatterns.class));
+
+    }
+
     public void go_to_recording(View view) {
         startActivity(new Intent(MainActivity.this, makeSound.class));
 
@@ -91,12 +104,9 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
-
-
     public void goToPackages(View view) {
         startActivity(new Intent(MainActivity.this, browsePackages.class));
 
     }
 
 }
-
