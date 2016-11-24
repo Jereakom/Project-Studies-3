@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import android.graphics.Color;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -37,6 +38,7 @@ public class makeSound extends AppCompatActivity {
     Button saveButton;
     Button discardButton;
     TextView saveText;
+    TextView recordtext;
     private AudioRecord recorder = null;
     private int bufferSize = 0;
     private Thread recordingThread = null;
@@ -57,6 +59,7 @@ public class makeSound extends AppCompatActivity {
         saveButton = (Button)findViewById(R.id.save_button);
         discardButton = (Button)findViewById(R.id.discard_button);
         saveText = (TextView) findViewById(R.id.spname);
+        recordtext = (TextView) findViewById(R.id.textView2);
         numberText.setText(Integer.toString(sound_name - 1) + "/8");
         recordButton.setOnTouchListener(touch);
         //setButtonHandlers();
@@ -192,8 +195,9 @@ public class makeSound extends AppCompatActivity {
         deleteTempFile();
         sound_name++;
         numberText.setText(Integer.toString(sound_name - 1) + "/8");
-          if (sound_name >8) {
+        if (sound_name >8) {
             enableButton(R.id.start_recording_button,false);
+            recordtext.setText("");
         }
     }
 
@@ -300,11 +304,15 @@ public class makeSound extends AppCompatActivity {
                     System.out.println(" pressed ");
                     //enableButtons(true);
                     startRecording();
+                    changeTextColor(true);
                     break;
                 case MotionEvent.ACTION_UP:
                     System.out.println(" released ");
                     //enableButtons(false);
                     stopRecording();
+                    if (sound_name <= 8){
+                    changeTextColor(false);
+                    }
                     break;
             }
             return false;
@@ -331,6 +339,7 @@ public class makeSound extends AppCompatActivity {
 
     private void discardRecordings(){
         File tempFolder = new File(Environment.getExternalStorageDirectory().getPath() + "/Music/Ringo/Soundpacks/" + AUDIO_RECORDER_FOLDER);
+        if (tempFolder.exists()){
         String[] children = tempFolder.list();
         for (int i = 0; i < children.length; i++)
         {
@@ -338,6 +347,7 @@ public class makeSound extends AppCompatActivity {
         }
         tempFolder.delete();
         recreate();
+        }
     }
 
     public static void copyFolder(File source, File destination)
@@ -398,6 +408,15 @@ public class makeSound extends AppCompatActivity {
                     e1.printStackTrace();
                 }
             }
+        }
+    }
+    public void changeTextColor (boolean state){
+        if (state == true){
+            recordtext.setText("Recording...");
+            recordtext.setTextColor(Color.GREEN);
+        } else {
+            recordtext.setText("Hold to Record");
+            recordtext.setTextColor(Color.WHITE);
         }
     }
 }
