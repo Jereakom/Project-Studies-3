@@ -1,12 +1,15 @@
 package group1.oamk.ringo;
 
+import android.Manifest;
 import android.app.Activity;
 import android.content.ContentResolver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,6 +20,7 @@ import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.List;
 
@@ -28,6 +32,12 @@ public class browsePatterns extends AppCompatActivity {
     private static final int PICK_CONTACT = 1;
 
     private long[] pattern = null;
+
+    private static final int REQUEST_CONTACT_PERMISSIONS = 1;
+
+    private static String[] READ_CONTACT_PERMISSIONS = {
+            Manifest.permission.READ_CONTACTS
+    };
 
     @Override
     public void onActivityResult(int reqCode, int resultCode, Intent data) {
@@ -103,11 +113,22 @@ public class browsePatterns extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         getIntent().setAction("Already created");
-        setContentView(R.layout.activity_browse_patterns);;
+        setContentView(R.layout.activity_browse_patterns);
+
+        int permissionContact = ActivityCompat.checkSelfPermission(browsePatterns.this, Manifest.permission.READ_CONTACTS);
+
+        if (permissionContact != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    browsePatterns.this,
+                    READ_CONTACT_PERMISSIONS,
+                    REQUEST_CONTACT_PERMISSIONS
+            );
+        }
 
         ListView lv = (ListView) findViewById(R.id.patterns_list);
 
         ContactsAdapter adapter = new ContactsAdapter(getPatterns(), this);
+
         lv.setAdapter(adapter);
 
     }
@@ -145,6 +166,7 @@ public class browsePatterns extends AppCompatActivity {
             if (view == null) {
                 LayoutInflater inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 view = inflater.inflate(R.layout.row_layout_for_patterns, null);
+
             }
 
             //Handle TextView and display string from your list
@@ -174,13 +196,30 @@ public class browsePatterns extends AppCompatActivity {
                         datasource.open();
                         datasource.deleteContact(deletion);
                         datasource.close();
-
                     }
                     catch (Exception e)
                     {
                         e.getStackTrace();
                     }
                     list.remove(position);
+                    if (list.size() == 0)
+                    {
+                        Toast.makeText(browsePatterns.this, "Deleted last pattern, returning to main menu", Toast.LENGTH_LONG).show();
+
+                        Thread thread = new Thread(){
+                            @Override
+                            public void run() {
+                                try {
+                                    Thread.sleep(1);
+                                    finish();
+                                } catch (Exception e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        };
+
+                        thread.start();
+                    }
                     notifyDataSetChanged();
 
                 }
@@ -216,6 +255,25 @@ public class browsePatterns extends AppCompatActivity {
         datasource.open();
         List<Contact> allPatterns = datasource.getAllContacts();
         datasource.close();
+        if (allPatterns.size() == 0)
+        {
+            Toast.makeText(this.getApplicationContext(), "You have no patterns to browse!", Toast.LENGTH_LONG).show();
+
+            Thread thread = new Thread(){
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(1);
+                        finish();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            thread.start();
+
+        }
         return allPatterns;
 
     }

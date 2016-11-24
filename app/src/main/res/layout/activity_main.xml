@@ -51,7 +51,7 @@
         style="@style/Widget.AppCompat.Button.Colored" />
 
     <Button
-        android:text="Recording"
+        android:text="Record a soundpack"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button3"
@@ -77,7 +77,7 @@
         style="@style/Widget.AppCompat.Button.Colored" />
 
     <Button
-        android:text="Sound Packages"
+        android:text="Soundpacks"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/button6"

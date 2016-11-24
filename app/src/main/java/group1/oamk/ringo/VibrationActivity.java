@@ -239,6 +239,14 @@ public class VibrationActivity extends AppCompatActivity {
                     return true;
                 }
 
+
+
+                if (pattern == null)
+                {
+                    Toast.makeText(VibrationActivity.this, "Press \"Store\" to store the pattern before saving!", Toast.LENGTH_LONG).show();
+                    return true;
+                }
+
                 try
                 {
                     datasource.open();

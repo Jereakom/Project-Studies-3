@@ -62,8 +62,8 @@ public class makeRingtone extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_ringtone);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        setSupportActionBar(toolbar);
+
+
         String rootPath = Environment.getExternalStorageDirectory()
                 .getAbsolutePath() + "/Music/Ringo/Soundpacks/";
         File root = new File(rootPath);
