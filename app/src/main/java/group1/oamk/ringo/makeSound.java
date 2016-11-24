@@ -18,6 +18,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import static android.R.id.list;
 
@@ -34,6 +35,7 @@ public class makeSound extends AppCompatActivity {
     TextView numberText;
     Button recordButton;
     Button saveButton;
+    Button discardButton;
     TextView saveText;
     private AudioRecord recorder = null;
     private int bufferSize = 0;
@@ -53,6 +55,7 @@ public class makeSound extends AppCompatActivity {
         numberText = (TextView)findViewById(R.id.sound_number);
         recordButton = (Button)findViewById(R.id.start_recording_button);
         saveButton = (Button)findViewById(R.id.save_button);
+        discardButton = (Button)findViewById(R.id.discard_button);
         saveText = (TextView) findViewById(R.id.spname);
         numberText.setText(Integer.toString(sound_name - 1) + "/8");
         recordButton.setOnTouchListener(touch);
@@ -71,6 +74,12 @@ public class makeSound extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 saveSoundpack();
+            }
+        });
+        discardButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                discardRecordings();
             }
         });
     }
@@ -313,7 +322,22 @@ public class makeSound extends AppCompatActivity {
                 new File(tempFolder, children[i]).delete();
             }
             tempFolder.delete();
+
         }
+        Toast.makeText(makeSound.this, "Soundpack successfully saved!",
+                Toast.LENGTH_LONG).show();
+        recreate();
+    }
+
+    private void discardRecordings(){
+        File tempFolder = new File(Environment.getExternalStorageDirectory().getPath() + "/Music/Ringo/Soundpacks/" + AUDIO_RECORDER_FOLDER);
+        String[] children = tempFolder.list();
+        for (int i = 0; i < children.length; i++)
+        {
+            new File(tempFolder, children[i]).delete();
+        }
+        tempFolder.delete();
+        recreate();
     }
 
     public static void copyFolder(File source, File destination)
