@@ -1,21 +1,52 @@
 package group1.oamk.ringo;
 
+import android.Manifest;
+import android.app.Activity;
 import android.content.Intent;
+import android.content.pm.PackageManager;
 import android.os.Environment;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
 import android.widget.TextView;
 
+
 import java.io.File;
 
 public class MainActivity extends AppCompatActivity {
+
+    private static final int REQUEST_PHONE_STATE = 1;
+
+    public static ContactsDataSource datasource;
+
+    private static String[] READ_PHONE_STATE_PERMISSIONS = {
+            Manifest.permission.READ_PHONE_STATE
+    };
+
+
+
+    public static void verifyPhoneStatePermission(Activity activity) {
+
+        int permission = ActivityCompat.checkSelfPermission(activity, Manifest.permission.READ_PHONE_STATE);
+
+        if (permission != PackageManager.PERMISSION_GRANTED) {
+            ActivityCompat.requestPermissions(
+                    activity,
+                    READ_PHONE_STATE_PERMISSIONS,
+                    REQUEST_PHONE_STATE
+            );
+        }
+    }
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        datasource = new ContactsDataSource(MainActivity.this);
+
+
 
         final Button button = (Button) findViewById(R.id.button2);
         button.setOnClickListener(new View.OnClickListener() {
@@ -24,18 +55,16 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
-
+        verifyPhoneStatePermission(this);
 
         Button btn_exit = (Button) findViewById(R.id.exit_button);
         btn_exit.setOnClickListener(new View.OnClickListener() {
 
             @Override
             public void onClick(View v) {
-                // TODO Auto-generated method stub
                 finish();
                 System.exit(0);
-                TextView testy = (TextView)findViewById(R.id.test);
-                testy.setText("Exit");
+
             }
         });
 
@@ -45,12 +74,6 @@ public class MainActivity extends AppCompatActivity {
         if (!root.exists()) {
             root.mkdirs();
         }
-    }
-
-    public void testThis(View view) {
-        CharSequence test = "THIS IS ANOTHER TEST";
-        TextView testy = (TextView)findViewById(R.id.test);
-        testy.setText(test);
     }
 
     public void goToGallery(View view) {

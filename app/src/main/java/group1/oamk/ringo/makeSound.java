@@ -5,8 +5,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
-import android.app.Activity;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
@@ -24,7 +25,7 @@ public class makeSound extends AppCompatActivity {
 
     private static final int RECORDER_BPP = 16;
     private static final String AUDIO_RECORDER_FILE_EXT_WAV = ".wav";
-    private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
+    private static final String AUDIO_RECORDER_FOLDER = "Temporary";
     private static final String AUDIO_RECORDER_TEMP_FILE = "record_temp.raw";
     private static final int RECORDER_SAMPLERATE = 44100;
     private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
@@ -32,6 +33,8 @@ public class makeSound extends AppCompatActivity {
     private int sound_name = 1;
     TextView numberText;
     Button recordButton;
+    Button saveButton;
+    TextView saveText;
     private AudioRecord recorder = null;
     private int bufferSize = 0;
     private Thread recordingThread = null;
@@ -49,6 +52,8 @@ public class makeSound extends AppCompatActivity {
         setContentView(R.layout.activity_make_sound);
         numberText = (TextView)findViewById(R.id.sound_number);
         recordButton = (Button)findViewById(R.id.start_recording_button);
+        saveButton = (Button)findViewById(R.id.save_button);
+        saveText = (TextView) findViewById(R.id.spname);
         numberText.setText(Integer.toString(sound_name - 1) + "/8");
         recordButton.setOnTouchListener(touch);
         //setButtonHandlers();
@@ -61,20 +66,19 @@ public class makeSound extends AppCompatActivity {
         if (!root.exists()) {
             root.mkdirs();
         }
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveSoundpack();
+            }
+        });
     }
 
-    /*private void setButtonHandlers() {
-        ((Button)findViewById(R.id.start_recording_button)).setOnClickListener(btnClick);
-        ((Button)findViewById(R.id.stop_recording_button)).setOnClickListener(btnClick);
-    }*/
+
 
     private void enableButton(int id,boolean isEnable){
-        ((Button)findViewById(id)).setEnabled(isEnable);
-    }
-
-    private void enableButtons(boolean isRecording) {
-        enableButton(R.id.start_recording_button,!isRecording);
-        enableButton(R.id.stop_recording_button,isRecording);
+        (findViewById(id)).setEnabled(isEnable);
     }
 
     private String getFilename(){
@@ -139,7 +143,7 @@ public class makeSound extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        int read = 0;
+        int read;
 
         if(null != os){
             while(isRecording){
@@ -181,7 +185,6 @@ public class makeSound extends AppCompatActivity {
         numberText.setText(Integer.toString(sound_name - 1) + "/8");
           if (sound_name >8) {
             enableButton(R.id.start_recording_button,false);
-            enableButton(R.id.stop_recording_button,false);
         }
     }
 
@@ -192,10 +195,10 @@ public class makeSound extends AppCompatActivity {
     }
 
     private void copyWaveFile(String inFilename,String outFilename){
-        FileInputStream in = null;
-        FileOutputStream out = null;
+        FileInputStream in;
+        FileOutputStream out;
         long totalAudioLen = 0;
-        long totalDataLen = totalAudioLen + 36;
+        long totalDataLen;
         long longSampleRate = RECORDER_SAMPLERATE;
         int channels = 1;
         long byteRate = RECORDER_BPP * RECORDER_SAMPLERATE * channels/8;
@@ -207,8 +210,6 @@ public class makeSound extends AppCompatActivity {
             out = new FileOutputStream(outFilename);
             totalAudioLen = in.getChannel().size();
             totalDataLen = totalAudioLen + 36;
-
-            // AppLog.logString("File size: " + totalDataLen);
 
             WriteWaveFileHeader(out, totalAudioLen, totalDataLen,
                     longSampleRate, channels, byteRate);
@@ -281,29 +282,6 @@ public class makeSound extends AppCompatActivity {
         out.write(header, 0, 44);
     }
 
-    /*private View.OnClickListener btnClick = new View.OnClickListener() {
-        @Override
-        public void onClick(View v) {
-            switch(v.getId()){
-                case R.id.start_recording_button:{
-                    //  AppLog.logString("Start Recording");
-
-                    enableButtons(true);
-                    startRecording();
-
-                    break;
-                }
-                case R.id.stop_recording_button:{
-                    //     AppLog.logString("Start Recording");
-
-                    enableButtons(false);
-                    stopRecording();
-
-                    break;
-                }
-            }
-        }
-    };*/
 
     View.OnTouchListener touch = new View.OnTouchListener() {
         @Override
@@ -323,4 +301,79 @@ public class makeSound extends AppCompatActivity {
             return false;
         }
     };
+
+    private void saveSoundpack(){
+        File tempFolder = new File(Environment.getExternalStorageDirectory().getPath() + "/Music/Ringo/Soundpacks/" + AUDIO_RECORDER_FOLDER);
+        copyFolder(tempFolder, new File(Environment.getExternalStorageDirectory().getPath() + "/Music/Ringo/Soundpacks/" + saveText.getText().toString()) );
+        if (tempFolder.isDirectory())
+        {
+            String[] children = tempFolder.list();
+            for (int i = 0; i < children.length; i++)
+            {
+                new File(tempFolder, children[i]).delete();
+            }
+            tempFolder.delete();
+        }
+    }
+
+    public static void copyFolder(File source, File destination)
+    {
+        if (source.isDirectory())
+        {
+            if (!destination.exists())
+            {
+                destination.mkdirs();
+            }
+
+            String files[] = source.list();
+
+            for (String file : files)
+            {
+                File srcFile = new File(source, file);
+                File destFile = new File(destination, file);
+
+                copyFolder(srcFile, destFile);
+            }
+        }
+        else
+        {
+            InputStream in = null;
+            OutputStream out = null;
+
+            try
+            {
+                in = new FileInputStream(source);
+                out = new FileOutputStream(destination);
+
+                byte[] buffer = new byte[1024];
+
+                int length;
+                while ((length = in.read(buffer)) > 0)
+                {
+                    out.write(buffer, 0, length);
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                try
+                {
+                    in.close();
+                }
+                catch (IOException e1)
+                {
+                    e1.printStackTrace();
+                }
+
+                try
+                {
+                    out.close();
+                }
+                catch (IOException e1)
+                {
+                    e1.printStackTrace();
+                }
+            }
+        }
+    }
 }

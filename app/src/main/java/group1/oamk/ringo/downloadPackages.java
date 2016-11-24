@@ -1,35 +1,20 @@
 package group1.oamk.ringo;
 
-import android.app.Activity;
-import android.content.ContentValues;
 import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.database.Cursor;
-import android.media.RingtoneManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
-import android.provider.ContactsContract;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.provider.ContactsContract.Contacts;
 import android.widget.Toast;
 
 import org.json.JSONArray;
@@ -43,33 +28,24 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.Iterator;
-import java.util.Map;
-import java.util.Set;
 
 public class downloadPackages extends AppCompatActivity {
-    private static final int PICK_CONTACT = 1000;
-    private static final int PROGRESS = 0x1;
     public ProgressBar mProgress;
 
     private int progressInt = 0;
 
-    private Handler mHandler = new Handler();
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_download_packages);
-        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         ListView lv = (ListView) findViewById(R.id.download_list);
 
-        MyPackagesAdapter adapter = null;
+        MyPackagesAdapter adapter;
             new asyncGetDownloads().execute();
         while (List.size() < 1){
         try {
@@ -79,6 +55,39 @@ public class downloadPackages extends AppCompatActivity {
             e.printStackTrace();
         }}
 
+        ArrayList<String> packageList = new ArrayList<>();
+        String parentDirectory = Environment.getExternalStorageDirectory() + "/Music/Ringo/Soundpacks";
+        File dirFileObj = new File(parentDirectory);
+        File[] fileList = dirFileObj.listFiles();
+        for (File inFile : fileList) {
+            packageList.add(inFile.getAbsolutePath().substring(inFile.getAbsolutePath().lastIndexOf("/")).replace("/", ""));
+        }
+        Iterator<String> iter = List.iterator();
+
+        while (iter.hasNext()) {
+            String str = iter.next();
+
+            if (packageList.contains(str))
+                iter.remove();
+        }
+        if (List.isEmpty()) {
+            Toast.makeText(this.getApplicationContext(), "There are no more sound packs left to download", Toast.LENGTH_LONG).show();
+
+            Thread thread = new Thread(){
+                @Override
+                public void run() {
+                    try {
+                        Thread.sleep(100);
+                        finish();
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            };
+
+            thread.start();
+        }
+
             adapter = new MyPackagesAdapter(List, this);
 
         lv.setAdapter(adapter);
@@ -87,12 +96,12 @@ public class downloadPackages extends AppCompatActivity {
 
 
     public class MyPackagesAdapter extends BaseAdapter implements ListAdapter {
-        private ArrayList<String> list = new ArrayList<String>();
+        private ArrayList<String> list = new ArrayList<>();
         private Context context;
 
 
 
-        public MyPackagesAdapter(ArrayList<String> list, Context context) {
+        MyPackagesAdapter(ArrayList<String> list, Context context) {
             this.list = list;
             this.context = context;
         }
@@ -110,13 +119,9 @@ public class downloadPackages extends AppCompatActivity {
         @Override
         public long getItemId(int pos) {
             return 0;
-            //just return 0 if your list items do not have an Id variable.
         }
         class DownloadFileFromURL extends AsyncTask<String, String, String> {
 
-            /**
-             * Before starting background thread
-             * */
             @Override
             protected void onPreExecute() {
                 super.onPreExecute();
@@ -125,9 +130,6 @@ public class downloadPackages extends AppCompatActivity {
                 mProgress.setVisibility(View.VISIBLE);
             }
 
-            /**
-             * Downloading file in background thread
-             * */
             @Override
             protected String doInBackground(String... f_url) {
                 int count;
@@ -152,13 +154,8 @@ public class downloadPackages extends AppCompatActivity {
 
                         URLConnection conection = url.openConnection();
                         conection.connect();
-                        // getting file length
-                        int lenghtOfFile = conection.getContentLength();
 
-                        // input stream to read file - with 8k buffer
                         InputStream input = new BufferedInputStream(url.openStream(), 8192);
-
-                        // Output stream to write file
 
                         OutputStream output = new FileOutputStream(rootPath + "/" + (i + 1) + ".wav");
                         byte data[] = new byte[1024];
@@ -167,15 +164,12 @@ public class downloadPackages extends AppCompatActivity {
                         while ((count = input.read(data)) != -1) {
                             total += count;
 
-                            // writing data to file
                             output.write(data, 0, count);
 
                         }
 
-                        // flushing output
                         output.flush();
 
-                        // closing streams
                         output.close();
                         input.close();
                         progressInt++;
@@ -192,9 +186,6 @@ public class downloadPackages extends AppCompatActivity {
                 mProgress.setProgress((Integer.parseInt(progress[0]))*12);
                 System.out.print((Integer.parseInt(progress[0]))*12);
             }
-            /**
-             * After completing background task
-             * **/
             @Override
             protected void onPostExecute(String file_url) {
                 System.out.println("Downloaded");
@@ -214,20 +205,15 @@ public class downloadPackages extends AppCompatActivity {
                 view = inflater.inflate(R.layout.download_row_layout, null);
             }
 
-            //Handle TextView and display string from your list
             TextView listItemText = (TextView)view.findViewById(R.id.list_item_string);
             listItemText.setText(list.get(position));
             mProgress = (ProgressBar)findViewById(R.id.progressBar);
 
 
-
-            //Handle buttons and add onClickListeners
-
             Button downloadBtn = (Button)view.findViewById(R.id.download_btn);
             downloadBtn.setOnClickListener(new View.OnClickListener(){
                 @Override
                 public void onClick(View v) {
-                    //downloadBtn.setEnabled(false);
                     mProgress.setVisibility(View.VISIBLE);
                     folder = list.get(position);
                     final String folder_space_handled = replace(list.get(position));
@@ -263,10 +249,9 @@ public class downloadPackages extends AppCompatActivity {
     }
 
 
-    ArrayList<String> List = new ArrayList<String>();
+    ArrayList<String> List = new ArrayList<>();
     private class asyncGetDownloads extends AsyncTask<Void, Void, Void> {
 
-        Activity downloadPackages;
         @Override
         protected Void doInBackground(Void... voids) {
             try {
@@ -297,7 +282,7 @@ public class downloadPackages extends AppCompatActivity {
                 JSONArray jArray = jObject.getJSONArray("soundpacks");
                 for (int i = 0; i < jArray.length(); i++) {
                     JSONObject jObj = jArray.getJSONObject(i);
-                    if(!jObj.getString("folder").toString().equals("list.php") ){
+                    if(!jObj.getString("folder").equals("list.php")) {
                     list.add(jObj.getString("folder"));}
                 }
             } catch (JSONException e) {
