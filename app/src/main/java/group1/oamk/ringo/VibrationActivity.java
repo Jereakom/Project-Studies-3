@@ -155,8 +155,16 @@ public class VibrationActivity extends AppCompatActivity {
         assign_button.setOnClickListener(new View.OnClickListener(){
             @Override
             public void onClick(View v) {
-                Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
-                startActivityForResult(intent, PICK_CONTACT);
+                if (pattern == null)
+                {
+                    Toast.makeText(VibrationActivity.this, "Press \"Store\" to store the pattern before assigning!", Toast.LENGTH_LONG).show();
+
+                }
+                else
+                {
+                    Intent intent = new Intent(Intent.ACTION_PICK, ContactsContract.Contacts.CONTENT_URI);
+                    startActivityForResult(intent, PICK_CONTACT);
+                }
             }
         });
 

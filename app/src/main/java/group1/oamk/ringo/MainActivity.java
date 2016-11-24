@@ -18,8 +18,6 @@ public class MainActivity extends AppCompatActivity {
 
     private static final int REQUEST_PHONE_STATE = 1;
 
-
-
     public static ContactsDataSource datasource;
 
     public static Vibrator vib;
@@ -29,9 +27,6 @@ public class MainActivity extends AppCompatActivity {
             Manifest.permission.READ_EXTERNAL_STORAGE,
             Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
-
-
-
 
 
     public static void verifyPhoneStatePermission(Activity activity) {
