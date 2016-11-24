@@ -165,9 +165,10 @@ public class browsePackages extends AppCompatActivity {
                 mediaplayer.release();
             }
             mediaplayer = MediaPlayer.create(this, song);
+            int duration = mediaplayer.getDuration();
             mediaplayer.start();
             try {
-                Thread.sleep(500);
+                Thread.sleep(duration);
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
