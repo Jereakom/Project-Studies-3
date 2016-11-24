@@ -10,24 +10,7 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context="group1.oamk.ringo.makeSound">
 
-    <Button
-        android:text=""
-        android:layout_width="100dp"
-        android:layout_height="100dp"
-        android:layout_marginTop="40dp"
-        android:id="@+id/start_recording_button"
-        android:background="@android:drawable/ic_btn_speak_now"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
 
-    <TextView
-        android:text=""
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@id/start_recording_button"
-        android:id="@+id/sound_number"
-        android:textAppearance="@style/TextAppearance.AppCompat.Large"
-        android:layout_centerHorizontal="true" />
 
     <EditText
         android:layout_width="match_parent"
@@ -49,7 +32,8 @@
         android:id="@+id/save_button"
         android:layout_below="@+id/spname"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        style="@style/Widget.AppCompat.Button.Colored" />
 
     <Button
         android:text="Discard"
@@ -60,8 +44,36 @@
         android:onClick="goToMain"
         android:layout_alignParentBottom="true"
         android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true" />
+        android:layout_alignParentStart="true"
+        style="@style/Widget.AppCompat.Button.Colored" />
 
+    <TextView
+        android:text="Hold to Record"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:id="@+id/textView2"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large" />
+
+    <Button
+        android:text=""
+        android:layout_width="100dp"
+        android:layout_height="100dp"
+        android:layout_marginTop="94dp"
+        android:layout_below="@id/textView2"
+        android:id="@+id/start_recording_button"
+        android:background="@android:drawable/ic_btn_speak_now"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:text=""
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/start_recording_button"
+        android:id="@+id/sound_number"
+        android:textAppearance="@style/TextAppearance.AppCompat.Large"
+        android:layout_centerHorizontal="true" />
 
 
 </RelativeLayout>
