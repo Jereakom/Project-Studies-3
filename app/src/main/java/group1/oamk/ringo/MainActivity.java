@@ -10,7 +10,6 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
 import android.widget.Button;
-import android.widget.TextView;
 
 
 import java.io.File;
@@ -22,7 +21,9 @@ public class MainActivity extends AppCompatActivity {
     public static ContactsDataSource datasource;
 
     private static String[] READ_PHONE_STATE_PERMISSIONS = {
-            Manifest.permission.READ_PHONE_STATE
+            Manifest.permission.READ_PHONE_STATE,
+            Manifest.permission.READ_EXTERNAL_STORAGE,
+            Manifest.permission.WRITE_EXTERNAL_STORAGE
     };
 
 
