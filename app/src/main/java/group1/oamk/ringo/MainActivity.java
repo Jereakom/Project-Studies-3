@@ -64,8 +64,7 @@ public class MainActivity extends AppCompatActivity {
             public void onClick(View v) {
                 finish();
                 System.exit(0);
-                TextView testy = (TextView)findViewById(R.id.test);
-                testy.setText("Exit");
+
             }
         });
 

@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
 
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -12,63 +14,86 @@ import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.os.Environment;
 import android.support.v7.app.AppCompatActivity;
+import android.view.MotionEvent;
 import android.view.View;
 import android.widget.Button;
+import android.widget.TextView;
+
+import static android.R.id.list;
 
 public class makeSound extends AppCompatActivity {
 
     private static final int RECORDER_BPP = 16;
     private static final String AUDIO_RECORDER_FILE_EXT_WAV = ".wav";
-    private static final String AUDIO_RECORDER_FOLDER = "AudioRecorder";
+    private static final String AUDIO_RECORDER_FOLDER = "Temporary";
     private static final String AUDIO_RECORDER_TEMP_FILE = "record_temp.raw";
     private static final int RECORDER_SAMPLERATE = 44100;
     private static final int RECORDER_CHANNELS = AudioFormat.CHANNEL_IN_MONO;
     private static final int RECORDER_AUDIO_ENCODING = AudioFormat.ENCODING_PCM_16BIT;
-
+    private int sound_name = 1;
+    TextView numberText;
+    Button recordButton;
+    Button saveButton;
+    TextView saveText;
     private AudioRecord recorder = null;
     private int bufferSize = 0;
     private Thread recordingThread = null;
     private boolean isRecording = false;
+
+    /*  TODO:Make the record on button hold
+        TODO:change the place where number is set
+        TODO:naming box hightlight and box + save button visible only after recording 8 sounds*/
+
 
     @SuppressWarnings("deprecation")
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_make_sound);
-
-        setButtonHandlers();
-        enableButtons(false);
+        numberText = (TextView)findViewById(R.id.sound_number);
+        recordButton = (Button)findViewById(R.id.start_recording_button);
+        saveButton = (Button)findViewById(R.id.save_button);
+        saveText = (TextView) findViewById(R.id.spname);
+        numberText.setText(Integer.toString(sound_name - 1) + "/8");
+        recordButton.setOnTouchListener(touch);
+        //setButtonHandlers();
+        //enableButtons(false);
 
         bufferSize = AudioRecord.getMinBufferSize(8000,AudioFormat.CHANNEL_IN_MONO,AudioFormat.ENCODING_PCM_16BIT);
+        String rootPath = Environment.getExternalStorageDirectory()
+                .getAbsolutePath() + "/Music/Ringo/Soundpacks/";
+        File root = new File(rootPath);
+        if (!root.exists()) {
+            root.mkdirs();
+        }
+
+        saveButton.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                saveSoundpack();
+            }
+        });
     }
 
-    private void setButtonHandlers() {
-        (findViewById(R.id.start_recording_button)).setOnClickListener(btnClick);
-        (findViewById(R.id.stop_recording_button)).setOnClickListener(btnClick);
-    }
+
 
     private void enableButton(int id,boolean isEnable){
         (findViewById(id)).setEnabled(isEnable);
     }
 
-    private void enableButtons(boolean isRecording) {
-        enableButton(R.id.start_recording_button,!isRecording);
-        enableButton(R.id.stop_recording_button,isRecording);
-    }
-
     private String getFilename(){
-        String filepath = Environment.getExternalStorageDirectory().getPath();
+        String filepath = Environment.getExternalStorageDirectory().getPath() + "/Music/Ringo/Soundpacks/";
         File file = new File(filepath,AUDIO_RECORDER_FOLDER);
 
         if(!file.exists()){
             file.mkdirs();
         }
 
-        return (file.getAbsolutePath() + "/" + System.currentTimeMillis() + AUDIO_RECORDER_FILE_EXT_WAV);
+        return (file.getAbsolutePath() + "/" + Integer.toString(sound_name) + AUDIO_RECORDER_FILE_EXT_WAV);
     }
 
     private String getTempFilename(){
-        String filepath = Environment.getExternalStorageDirectory().getPath();
+        String filepath = Environment.getExternalStorageDirectory().getPath() + "/Music/Ringo/Soundpacks/";
         File file = new File(filepath,AUDIO_RECORDER_FOLDER);
 
         if(!file.exists()){
@@ -82,6 +107,8 @@ public class makeSound extends AppCompatActivity {
 
         return (file.getAbsolutePath() + "/" + AUDIO_RECORDER_TEMP_FILE);
     }
+
+
 
     private void startRecording(){
         recorder = new AudioRecord(MediaRecorder.AudioSource.MIC,
@@ -154,6 +181,11 @@ public class makeSound extends AppCompatActivity {
 
         copyWaveFile(getTempFilename(),getFilename());
         deleteTempFile();
+        sound_name++;
+        numberText.setText(Integer.toString(sound_name - 1) + "/8");
+          if (sound_name >8) {
+            enableButton(R.id.start_recording_button,false);
+        }
     }
 
     private void deleteTempFile() {
@@ -250,24 +282,98 @@ public class makeSound extends AppCompatActivity {
         out.write(header, 0, 44);
     }
 
-    private View.OnClickListener btnClick = new View.OnClickListener() {
+
+    View.OnTouchListener touch = new View.OnTouchListener() {
         @Override
-        public void onClick(View v) {
-            switch(v.getId()){
-                case R.id.start_recording_button:{
-
-                    enableButtons(true);
+        public boolean onTouch(View v, MotionEvent event) {
+            switch(event.getAction()) {
+                case MotionEvent.ACTION_DOWN:
+                    System.out.println(" pressed ");
+                    //enableButtons(true);
                     startRecording();
-
                     break;
-                }
-                case R.id.stop_recording_button:{
-
-                    enableButtons(false);
+                case MotionEvent.ACTION_UP:
+                    System.out.println(" released ");
+                    //enableButtons(false);
                     stopRecording();
-
                     break;
+            }
+            return false;
+        }
+    };
+
+    private void saveSoundpack(){
+        File tempFolder = new File(Environment.getExternalStorageDirectory().getPath() + "/Music/Ringo/Soundpacks/" + AUDIO_RECORDER_FOLDER);
+        copyFolder(tempFolder, new File(Environment.getExternalStorageDirectory().getPath() + "/Music/Ringo/Soundpacks/" + saveText.getText().toString()) );
+        if (tempFolder.isDirectory())
+        {
+            String[] children = tempFolder.list();
+            for (int i = 0; i < children.length; i++)
+            {
+                new File(tempFolder, children[i]).delete();
+            }
+            tempFolder.delete();
+        }
+    }
+
+    public static void copyFolder(File source, File destination)
+    {
+        if (source.isDirectory())
+        {
+            if (!destination.exists())
+            {
+                destination.mkdirs();
+            }
+
+            String files[] = source.list();
+
+            for (String file : files)
+            {
+                File srcFile = new File(source, file);
+                File destFile = new File(destination, file);
+
+                copyFolder(srcFile, destFile);
+            }
+        }
+        else
+        {
+            InputStream in = null;
+            OutputStream out = null;
+
+            try
+            {
+                in = new FileInputStream(source);
+                out = new FileOutputStream(destination);
+
+                byte[] buffer = new byte[1024];
+
+                int length;
+                while ((length = in.read(buffer)) > 0)
+                {
+                    out.write(buffer, 0, length);
+                }
+            }
+            catch (Exception e)
+            {
+                e.printStackTrace();
+                try
+                {
+                    in.close();
+                }
+                catch (IOException e1)
+                {
+                    e1.printStackTrace();
+                }
+
+                try
+                {
+                    out.close();
+                }
+                catch (IOException e1)
+                {
+                    e1.printStackTrace();
                 }
             }
         }
-    }; }
+    }
+}
