@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent">
+
+        <TextView
+            android:text="0"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_centerHorizontal="true"
+            android:layout_marginTop="44dp"
+            android:id="@+id/time" />
+
+
+        <Button
+            android:text="Vibrate"
+            android:layout_width="200dp"
+            android:layout_height="100dp"
+            android:id="@+id/vibrate_button"
+            android:layout_alignTop="@+id/time"
+            android:layout_alignLeft="@+id/start_button"
+            android:layout_alignStart="@+id/start_button"
+            style="@style/Widget.AppCompat.Button.Colored"
+            android:layout_alignRight="@+id/end_button"
+            android:layout_alignEnd="@+id/end_button" />
+
+        <TextView
+            android:text='Press "Vibrate" to start recording the pattern'
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/textView3"
+            android:layout_above="@+id/vibrate_button"
+            android:layout_marginBottom="12dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:textAlignment="center" />
+
+        <Button
+            android:text="Store"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/end_button"
+            android:layout_marginRight="15dp"
+            android:layout_marginEnd="15dp"
+            android:layout_below="@+id/vibrate_button"
+            android:layout_alignRight="@+id/assign_button"
+            android:layout_alignEnd="@+id/assign_button"
+            android:layout_marginTop="22dp"
+            style="@style/Widget.AppCompat.Button.Colored" />
+
+        <Button
+            android:text="Clear"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/start_button"
+            android:layout_alignBaseline="@+id/end_button"
+            android:layout_alignBottom="@+id/end_button"
+            android:layout_toLeftOf="@+id/preview_button"
+            android:layout_toStartOf="@+id/preview_button"
+            style="@style/Widget.AppCompat.Button.Colored" />
+
+        <Button
+            android:text="Save pattern"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/save_button"
+            android:layout_below="@+id/pattern_name"
+            android:layout_alignLeft="@+id/assign_button"
+            android:layout_alignStart="@+id/assign_button"
+            style="@style/Widget.AppCompat.Button.Colored" />
+
+        <Button
+            android:text="Assign to Contact"
+            android:layout_width="300dp"
+            android:layout_height="wrap_content"
+            android:id="@+id/assign_button"
+            android:layout_below="@+id/save_button"
+            android:layout_centerHorizontal="true"
+            style="@style/Widget.AppCompat.Button.Colored" />
+
+        <EditText
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:inputType="textPersonName"
+            android:hint="Pattern name"
+            android:ems="10"
+            android:id="@+id/pattern_name"
+            android:textAlignment="center"
+            android:layout_marginTop="12dp"
+            android:layout_below="@+id/preview_button"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentEnd="true" />
+
+        <Button
+            android:text="Preview"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:id="@+id/preview_button"
+            android:layout_below="@+id/end_button"
+            android:layout_toLeftOf="@+id/end_button"
+            android:layout_toStartOf="@+id/end_button"
+            style="@style/Widget.AppCompat.Button.Colored" />
+
+    </RelativeLayout>
+
+
+</LinearLayout>

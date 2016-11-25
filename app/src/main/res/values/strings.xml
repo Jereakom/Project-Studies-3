@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">RinGo</string>
+    <string name="title_activity_get_ringtones">getRingtones</string>
+</resources>
