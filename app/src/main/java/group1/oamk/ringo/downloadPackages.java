@@ -77,7 +77,7 @@ public class downloadPackages extends AppCompatActivity {
                 @Override
                 public void run() {
                     try {
-                        Thread.sleep(100);
+                        Thread.sleep(1);
                         finish();
                     } catch (Exception e) {
                         e.printStackTrace();
